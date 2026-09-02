@@ -22,7 +22,7 @@ The bespoke configurator has two engines: a **real Heaven piece** recoloured
 live (photo-segmented wood/upholstery masks, hue-preserving canvas blends) and
 **four real-time 3D models** (Draco-compressed glTF, material variants +
 re-upholstery, lazy-loaded so three.js never touches the initial bundle).
-Every world gets both. The visitor's choices — style world, piece, wood,
+Every world gets live previews. The visitor's choices — style world, piece, wood,
 fabric — land in a prefilled WhatsApp message: the toy *is* the CTA.
 
 A two-minute real showroom walkthrough video (click-to-play, zero preload)
