@@ -7,7 +7,6 @@ import Intro from './components/Intro.jsx';
 import Collections from './components/Collections.jsx';
 import Bespoke from './components/Bespoke.jsx';
 import Ledger from './components/Ledger.jsx';
-import Showroom from './components/Showroom.jsx';
 import FeedRail from './components/FeedRail.jsx';
 import Proof from './components/Proof.jsx';
 import CTABand from './components/CTABand.jsx';
@@ -29,7 +28,6 @@ function Page() {
         <Collections />
         <Bespoke />
         <Ledger />
-        <Showroom />
         <Proof />
         <FeedRail />
         <CTABand />

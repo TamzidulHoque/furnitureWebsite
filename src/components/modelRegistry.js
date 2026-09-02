@@ -2,6 +2,21 @@
 // Models from the Khronos glTF sample library, CC BY 4.0 / CC0 — credited in the footer.
 
 export const MODELS = {
+  gothicBed: {
+    url: '/models/GothicBed.glb',
+    label: 'Heritage Bed',
+    camera: [2.9, 1.5, 3.3], target: [0, 0.5, 0], fov: 38, offset: [0, -0.55, 0],
+    fabric: null, // single-material carve — finish only
+    wood: {
+      mode: 'tint', match: /GothicBed/i,
+      options: [
+        { name: 'Antique Oak', css: '#6f4f33', original: true },
+        { name: 'Warm Walnut', css: '#7a5a3a', color: '#b98c60' },
+        { name: 'Espresso', css: '#4a3626', color: '#8a6a4e' },
+        { name: 'Noir Stain', css: '#35302c', color: '#6a625c' },
+      ],
+    },
+  },
   glamSofa: {
     url: '/models/sofa.glb',
     label: 'Velvet Sofa',

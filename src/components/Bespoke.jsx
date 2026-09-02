@@ -1,3 +1,4 @@
+import Ornament from './Ornament.jsx';
 import Configurator from './Configurator.jsx';
 
 const STEPS = [
@@ -21,6 +22,7 @@ const STEPS = [
 export default function Bespoke() {
   return (
     <section className="bespoke sec-dark" id="bespoke">
+      <Ornament variant="b" pos="bl" />
       <div className="container">
         <div className="bespoke-head rv">
           <p className="eyebrow">The Heaven Difference</p>

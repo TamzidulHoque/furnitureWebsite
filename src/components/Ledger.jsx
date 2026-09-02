@@ -1,3 +1,5 @@
+import Ornament from './Ornament.jsx';
+
 const ROWS = [
   { t: 'Free design consultation', d: 'At the showroom, or in your home — measure first, talk later.' },
   { t: 'Fully bespoke', d: 'Built to your space and taste. Nothing here is mass-produced.' },
@@ -11,6 +13,7 @@ const ROWS = [
 export default function Ledger() {
   return (
     <section className="ledger sec-light" id="why">
+      <Ornament variant="b" pos="tr" />
       <div className="container ledger-grid">
         <div className="ledger-sticky rv">
           <p className="eyebrow">The Order Slip</p>

@@ -1,3 +1,5 @@
+import Ornament from './Ornament.jsx';
+import { useRef, useState } from 'react';
 import { SITE } from '../site.config.js';
 
 const TIMELINE = [
@@ -9,8 +11,16 @@ const TIMELINE = [
 ];
 
 export default function Proof() {
+  const videoRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const play = () => {
+    setPlaying(true);
+    requestAnimationFrame(() => videoRef.current?.play());
+  };
+
   return (
     <section className="proof sec-dark" id="visit">
+      <Ornament variant="a" pos="bl" />
       <div className="container">
         <div className="proof-grid">
           <div className="rv">
@@ -27,14 +37,35 @@ export default function Proof() {
               </div>
             </div>
           </div>
+
+          {/* real walkthrough footage, framed small so 720p stays crisp */}
           <div className="proof-visual">
-            <div className="framed">
-              <div className="crop rv-img">
-                <img src="/img/showroom-real.webp" alt="Inside the Heaven Furniture Mart showroom, with the Chattogram skyline through the window" loading="lazy" />
+            <div className="framed rv" data-rv-delay="0.08">
+              <div className="crop proof-video">
+                {playing ? (
+                  <video
+                    ref={videoRef}
+                    src="/video/showroom.mp4"
+                    poster="/video/poster.jpg"
+                    controls
+                    playsInline
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                ) : (
+                  <button className="showroom-poster" onClick={play} aria-label="Play the showroom tour video">
+                    <img src="/video/poster.jpg" alt="Inside the Heaven Furniture Mart showroom" loading="lazy" />
+                    <span className="play-ring">
+                      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" fill="currentColor" />
+                      </svg>
+                    </span>
+                    <span className="play-note">Walk the showroom · 2 min</span>
+                  </button>
+                )}
               </div>
             </div>
             <p className="proof-cap rv">
-              Our showroom — that&rsquo;s Chattogram outside the window.
+              Our Agrabad floor, on film — every piece is ours.
             </p>
           </div>
         </div>

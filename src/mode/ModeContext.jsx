@@ -15,6 +15,9 @@ export const MODES = {
     logo: '/img/logo-light.png',
     wipeInk: '#d4a94f',
     heroImg: '/img/bed-hero.webp',
+    heroFx: 'curtain',
+    heroImgs: ['/img/bed-hero.webp', '/img/living-royal.webp', '/img/bed-gold.webp', '/img/dining-floral.webp'],
+    introImgs: ['/img/showroom-real.webp', '/img/bed-gold.webp'],
     heroCaption: 'Four-poster bed · hand-finished, Agrabad workshop',
     heroSub:
       'Hand-carved frames, gilded edges, upholstery cut to order — heirloom pieces from our Agrabad atelier.',
@@ -34,6 +37,9 @@ export const MODES = {
     logo: '/img/logo-dark.png',
     wipeInk: '#96803c',
     heroImg: '/img/office-desk.webp',
+    heroFx: 'slide',
+    heroImgs: ['/img/office-desk.webp', '/img/bed-white.webp', '/img/office-lounge.webp', '/img/office-conf.webp'],
+    introImgs: ['/img/office-lounge.webp', '/img/bed-white.webp'],
     heroCaption: 'Executive workspace · built to measure',
     heroSub:
       'Clean lines, light woods, quiet comfort — workspaces and homes built to your space, not off a shelf.',
@@ -53,6 +59,9 @@ export const MODES = {
     logo: '/img/logo-light.png',
     wipeInk: '#c9973f',
     heroImg: '/img/console-noir.webp',
+    heroFx: 'book',
+    heroImgs: ['/img/console-noir.webp', '/img/dining-noir.webp', '/img/chair-ergo.webp'],
+    introImgs: ['/img/console-noir.webp', '/img/dining-noir.webp'],
     heroCaption: 'Lacquered console · brass detail',
     heroSub:
       'Dark lacquer, brass hardware, low light — statement pieces made to measure for rooms with presence.',

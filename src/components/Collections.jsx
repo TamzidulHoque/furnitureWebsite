@@ -1,9 +1,11 @@
+import Ornament from './Ornament.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
 
 export default function Collections() {
   const { m } = useMode();
   return (
     <section className="collections sec-light alt" id="collections">
+      <Ornament variant="a" pos="tr" />
       <div className="container">
         <div className="col-head">
           <div className="rv">

@@ -1,8 +1,10 @@
+import Ornament from './Ornament.jsx';
 import { SITE, WA_DEFAULT } from '../site.config.js';
 
 export default function CTABand() {
   return (
     <section className="ctaband sec-dark" style={{ background: 'var(--ground-deep)' }}>
+      <Ornament variant="b" pos="br" />
       <div className="container">
         <p className="eyebrow rv">One Conversation Away</p>
         <h2 className="display rv" data-rv-delay="0.05">
