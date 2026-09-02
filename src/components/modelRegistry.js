@@ -57,7 +57,7 @@ export const MODELS = {
   damaskChair: {
     url: '/models/ChairDamaskPurplegold.glb',
     label: 'Damask Chair',
-    camera: [1.14, 0.6, 1.3], target: [0, 0.0, 0], fov: 40, offset: [0, -0.42, 0],
+    camera: [1.08, 0.5, 1.24], target: [0, -0.02, 0], fov: 40, offset: [0, -0.42, 0],
     fabric: {
       mode: 'reupholster', match: /fabric/i,
       options: [

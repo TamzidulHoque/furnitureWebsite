@@ -614,7 +614,7 @@ blockquote.big-quote {
   color: var(--ground-ink-soft);
   margin-top: 18px;
 }
-.footer h4 {
+.footer h3 {
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.26em;
@@ -814,3 +814,52 @@ section { position: relative; }
 /* modern geometry sits clear of headers too */
 :root[data-mode='modern'] .orn-tr { top: 120px; right: -40px; }
 :root[data-mode='modern'] .orn-tl { top: 120px; left: -40px; }
+
+/* ═══════════════ CUSTOM CURSOR ═══════════════ */
+.cursor-dot, .cursor-ring {
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 3000;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+.cursor-dot { width: 5px; height: 5px; background: var(--accent); margin: -2.5px 0 0 -2.5px; }
+.cursor-ring {
+  width: 34px; height: 34px;
+  border: 1px solid var(--accent);
+  opacity: 0.55;
+  margin: -17px 0 0 -17px;
+}
+.has-cursor .cursor-dot, .has-cursor .cursor-ring { display: block; }
+@media (hover: hover) and (pointer: fine) {
+  .has-cursor, .has-cursor a, .has-cursor button, .has-cursor .swatch { cursor: none; }
+  .has-cursor input, .has-cursor textarea, .has-cursor video { cursor: auto; }
+}
+
+/* ═══════════════ ROOM SIZE INPUTS ═══════════════ */
+.room-inputs { display: flex; align-items: center; gap: 12px; }
+.room-inputs input {
+  width: 92px;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ground-ink);
+  background: color-mix(in srgb, var(--ground-deep) 55%, transparent);
+  border: 1px solid var(--hairline-dark);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.25s;
+  -moz-appearance: textfield;
+}
+.room-inputs input::-webkit-outer-spin-button, .room-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.room-inputs input:focus { border-color: var(--accent); }
+.room-inputs input::placeholder { color: var(--ground-ink-soft); }
+.room-inputs span { color: var(--ground-ink-soft); font-size: 13px; }
+.room-unit { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; }
+
+/* book-flip page shadow */
+.hs-shade {
+  position: absolute; inset: 0; z-index: 2;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 45%);
+  opacity: 0; visibility: hidden; pointer-events: none;
+}

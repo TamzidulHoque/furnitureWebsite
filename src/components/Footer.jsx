@@ -14,13 +14,13 @@ export default function Footer() {
             <p className="footer-tag">{SITE.tagline}</p>
           </div>
           <div className="footer-col">
-            <h4>Visit</h4>
+            <h3>Visit</h3>
             <p>{SITE.address}</p>
             <a href={SITE.phoneHref}>{SITE.phoneDisplay}</a>
             <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
           </div>
           <div className="footer-col">
-            <h4>Follow</h4>
+            <h3>Follow</h3>
             <a href={SITE.social.facebook} target="_blank" rel="noreferrer">Facebook</a>
             <a href={SITE.social.instagram} target="_blank" rel="noreferrer">Instagram</a>
             <a href={SITE.social.youtube} target="_blank" rel="noreferrer">YouTube</a>

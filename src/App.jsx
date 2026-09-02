@@ -12,6 +12,7 @@ import Proof from './components/Proof.jsx';
 import CTABand from './components/CTABand.jsx';
 import Footer from './components/Footer.jsx';
 import Lightplay from './components/Lightplay.jsx';
+import Cursor from './components/Cursor.jsx';
 
 function Page() {
   const { mode } = useMode();
@@ -21,6 +22,7 @@ function Page() {
     <>
       <Header />
       <Lightplay />
+      <Cursor />
       <main>
         <Hero />
         <Marquee />

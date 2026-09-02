@@ -31,11 +31,11 @@
   --ground: #2c4543;            /* deep charcoal-teal hero/dark sections */
   --ground-deep: #223634;
   --ground-ink: #f2ede1;
-  --ground-ink-soft: #b8c5bf;
+  --ground-ink-soft: #c7d1cb;
   --paper: #f2ecdf;             /* warm ivory light sections */
   --paper-2: #ece4d2;
   --paper-ink: #2b2a22;
-  --paper-ink-soft: #6d685a;
+  --paper-ink-soft: #5f5a4c;
   --accent: #d4a94f;            /* muted gold */
   --accent-ink: #a97d2e;        /* gold dark enough for light grounds */
   --hairline-dark: rgba(212, 169, 79, 0.35);
@@ -57,7 +57,7 @@
   --paper: #faf8f3;
   --paper-2: #f1eee6;
   --paper-ink: #262624;
-  --paper-ink-soft: #74736a;
+  --paper-ink-soft: #63625a;
   --accent: #a98a4f;
   --accent-ink: #96803c;
   --hairline-dark: rgba(60, 58, 48, 0.22);
@@ -75,11 +75,11 @@
   --ground: #171310;            /* near-black brown */
   --ground-deep: #100d0b;
   --ground-ink: #ece4d6;
-  --ground-ink-soft: #97897a;
+  --ground-ink-soft: #a89a8a;
   --paper: #211c17;             /* “light” sections stay dark, one step up */
   --paper-2: #292318;
   --paper-ink: #e9e0d1;
-  --paper-ink-soft: #9b8d7c;
+  --paper-ink-soft: #a89a89;
   --accent: #c9973f;
   --accent-ink: #d4a94f;
   --hairline-dark: rgba(201, 151, 63, 0.3);

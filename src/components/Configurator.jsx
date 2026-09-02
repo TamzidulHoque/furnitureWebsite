@@ -39,6 +39,8 @@ export default function Configurator() {
   const [modelKey, setModelKey] = useState(pieces[0].model);
   const [wood, setWood] = useState(0);
   const [fabric, setFabric] = useState(0);
+  const [roomL, setRoomL] = useState('');
+  const [roomW, setRoomW] = useState('');
 
   const model = MODELS[modelKey];
   const woods = model.wood?.options ?? null;
@@ -61,12 +63,14 @@ export default function Configurator() {
     }
   };
 
-  const message =
-    `Hello Heaven Furniture Mart! I designed a piece on your site and would like a quote.\n` +
-    `• Style world: ${m.name}\n` +
-    `• Piece: ${pieces[piece].label}\n` +
-    (woods ? `• Wood finish: ${woods[wood].name}\n` : '') +
-    (fabrics ? `• Upholstery: ${fabrics[fabric].name}` : '');
+  const message = [
+    'Hello Heaven Furniture Mart! I designed a piece on your site and would like a quote.',
+    `• Style world: ${m.name}`,
+    `• Piece: ${pieces[piece].label}`,
+    woods && `• Wood finish: ${woods[wood].name}`,
+    fabrics && `• Upholstery: ${fabrics[fabric].name}`,
+    roomL && roomW && `• My room: ${roomL} × ${roomW} ft`,
+  ].filter(Boolean).join('\n');
 
   return (
     <div className="config rv" id="configurator">
@@ -129,6 +133,27 @@ export default function Configurator() {
             </div>
           </div>
         )}
+
+        <div className="config-group">
+          <div className="config-label">
+            <span>Your Space — optional</span>
+            <b>{roomL && roomW ? `${roomL} × ${roomW} ft` : 'we build to fit'}</b>
+          </div>
+          <div className="room-inputs">
+            <input
+              type="number" min="1" max="99" inputMode="numeric" placeholder="Length"
+              aria-label="Room length in feet"
+              value={roomL} onChange={(e) => setRoomL(e.target.value.slice(0, 2))}
+            />
+            <span aria-hidden="true">×</span>
+            <input
+              type="number" min="1" max="99" inputMode="numeric" placeholder="Width"
+              aria-label="Room width in feet"
+              value={roomW} onChange={(e) => setRoomW(e.target.value.slice(0, 2))}
+            />
+            <span className="room-unit">feet</span>
+          </div>
+        </div>
 
         <div className="config-cta">
           <a className="btn btn-solid" href={waLink(message)} target="_blank" rel="noreferrer">

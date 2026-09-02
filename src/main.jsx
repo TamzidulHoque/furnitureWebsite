@@ -20,3 +20,17 @@ createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>
 );
+
+// dismiss the entrance curtain once the app is on its feet
+const boot = document.getElementById('boot');
+if (boot && !document.documentElement.classList.contains('no-boot')) {
+  const dismiss = () => {
+    boot.classList.add('boot-done');
+    try { sessionStorage.setItem('hfm-booted', '1'); } catch { /* private mode */ }
+    setTimeout(() => boot.remove(), 900);
+  };
+  window.addEventListener('load', () => setTimeout(dismiss, 650), { once: true });
+  setTimeout(dismiss, 2400); // never hold the page hostage
+} else {
+  boot?.remove();
+}

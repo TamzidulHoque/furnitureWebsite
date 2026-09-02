@@ -6,6 +6,11 @@ import ModeSwitch from './ModeSwitch.jsx';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// every processed image ships a half-size sibling: name.webp / name-sm.webp
+const SIZES = '(max-width: 900px) 100vw, 42vw';
+const srcset = (src) => `${src.replace('.webp', '-sm.webp')} 760w, ${src} 1400w`;
+const setImg = (el, src) => { el.srcset = srcset(src); el.src = src; };
+
 // Multi-image stage. Each world turns its own pages its own way:
 // classic — curtain part from the centre · modern — clean slide ·
 // noir — a page turned in a dark book.
@@ -16,6 +21,7 @@ function HeroStage() {
   const fxLayer = useRef(null);
   const fxImg = useRef(null);
   const seam = useRef(null);
+  const shade = useRef(null);
   const stage = useRef(null);
   const busy = useRef(false);
   const opened = useRef(false);
@@ -33,7 +39,7 @@ function HeroStage() {
   useEffect(() => {
     setIdx(0);
     if (baseImg.current) {
-      baseImg.current.src = m.heroImgs[0];
+      setImg(baseImg.current, m.heroImgs[0]);
       if (!reduced()) gsap.fromTo(baseImg.current, { scale: 1.08 }, { scale: 1, duration: 1.1, ease: 'power2.out' });
     }
   }, [m.key]);
@@ -42,14 +48,14 @@ function HeroStage() {
     if (busy.current || next === idx) return;
     const target = imgs[next];
     if (reduced()) {
-      baseImg.current.src = target;
+      setImg(baseImg.current, target);
       setIdx(next);
       return;
     }
     busy.current = true;
-    fxImg.current.src = target;
+    setImg(fxImg.current, target);
     const done = () => {
-      baseImg.current.src = target;
+      setImg(baseImg.current, target);
       gsap.set(fxLayer.current, { clearProps: 'all', autoAlpha: 0 });
       gsap.set(baseImg.current, { clearProps: 'transform,filter,opacity' });
       gsap.set(seam.current, { autoAlpha: 0 });
@@ -65,16 +71,18 @@ function HeroStage() {
     } else if (m.heroFx === 'book') {
       // the current image is a page: lift it over and off the spine (left edge)
       tl.set(fxLayer.current, { autoAlpha: 1, x: 0, clipPath: 'none', zIndex: 1 })
-        .set(baseImg.current.parentNode, { zIndex: 2, transformOrigin: 'left center' })
+        .set(baseImg.current.parentNode, { zIndex: 3, transformOrigin: 'left center' })
         .set(stage.current, { perspective: 1400 })
+        .fromTo(shade.current, { autoAlpha: 0.65 }, { autoAlpha: 0, duration: 0.95, ease: 'power2.inOut' }, 0)
         .to(baseImg.current.parentNode, {
           rotateY: -112,
           duration: 0.95,
           ease: 'power2.inOut',
-        })
+        }, 0)
         .to(baseImg.current, { filter: 'brightness(0.55)', duration: 0.5 }, 0.25)
         .set(baseImg.current.parentNode, { clearProps: 'transform,zIndex' })
-        .set(baseImg.current, { filter: 'none' });
+        .set(baseImg.current, { filter: 'none' })
+        .set(shade.current, { autoAlpha: 0 });
     } else {
       // curtain: part from the centre, a gold seam flashes where it opens
       tl.set(fxLayer.current, { autoAlpha: 1, x: 0, rotateY: 0, clipPath: 'inset(0 50% 0 50%)' })
@@ -97,12 +105,13 @@ function HeroStage() {
   return (
     <div className="hero-stage" ref={stage}>
       <div className="hs-layer hs-base">
-        <img ref={baseImg} src={imgs[0]} alt={m.heroCaption} fetchPriority="high" />
+        <img ref={baseImg} src={imgs[0]} srcSet={srcset(imgs[0])} sizes={SIZES} alt={m.heroCaption} fetchPriority="high" />
       </div>
       <div className="hs-layer hs-fx" ref={fxLayer} aria-hidden="true">
         <img ref={fxImg} alt="" />
       </div>
       <span className="hs-seam" ref={seam} aria-hidden="true" />
+      <div className="hs-shade" ref={shade} aria-hidden="true" />
       <div className="hs-dots" role="tablist" aria-label="Hero images">
         {imgs.map((_, i) => (
           <button

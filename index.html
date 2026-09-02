@@ -9,10 +9,54 @@
     <meta property="og:title" content="Heaven Furniture Mart — Furniture, Crafted Around You" />
     <meta property="og:description" content="Bespoke furniture & interior styling from Agrabad, Chattogram. Designed. Crafted. Customized." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/img/bed-hero.webp" />
+    <!-- NOTE: after deploying, change og:image to the full URL, e.g. https://yourdomain.com/og.jpg -->
+    <meta property="og:image" content="/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" as="image" imagesrcset="/img/bed-hero-sm.webp 760w, /img/bed-hero.webp 1400w" imagesizes="(max-width: 900px) 100vw, 42vw" />
     <title>Heaven Furniture Mart — Furniture, Crafted Around You</title>
+    <script>
+      // entrance plays once per session
+      try { if (sessionStorage.getItem('hfm-booted')) document.documentElement.classList.add('no-boot'); } catch (e) {}
+    </script>
+    <style>
+      #boot {
+        position: fixed; inset: 0; z-index: 5000;
+        background: #22403d;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+        transition: transform 0.68s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      #boot.boot-done { transform: translateY(-101%); }
+      .no-boot #boot { display: none; }
+      #boot svg path {
+        stroke-dasharray: 1; stroke-dashoffset: 1;
+        animation: bootDraw 0.85s ease-out forwards;
+      }
+      #boot svg path:nth-child(2) { animation-delay: 0.4s; }
+      #boot .boot-word {
+        font-family: Georgia, serif; font-size: 12px; letter-spacing: 0.42em;
+        color: #b8c5bf; text-transform: uppercase;
+        opacity: 0; animation: bootFade 0.5s ease-out 0.55s forwards;
+      }
+      @keyframes bootDraw { to { stroke-dashoffset: 0; } }
+      @keyframes bootFade { to { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        #boot svg path { animation-duration: 0.01s; }
+        #boot .boot-word { animation-duration: 0.01s; animation-delay: 0s; }
+        #boot { transition-duration: 0.2s; }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot" aria-hidden="true">
+      <svg viewBox="0 0 64 56" width="76" height="66" fill="none" stroke="#dda741" stroke-width="3.6" stroke-linecap="square">
+        <path pathLength="1" d="M12 52 L32 8 L52 52" />
+        <path pathLength="1" d="M21 36 L43 36" />
+      </svg>
+      <span class="boot-word">Heaven Furniture Mart</span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
