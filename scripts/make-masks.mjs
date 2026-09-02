@@ -33,6 +33,54 @@ while (q.length) {
   }
 }
 
+// ---- 1b. reclaim enclosed background islands (wall/floor seen through
+//          arm holes and table arches, unreachable by the border flood) ----
+{
+  // per-row mean of known bg, to compare against (bg is a smooth gradient)
+  const rowMean = new Float64Array(H * 3), rowN = new Uint32Array(H);
+  for (let i = 0; i < N; i++) if (bg[i]) {
+    const y = (i / W) | 0;
+    rowMean[y * 3] += R(i); rowMean[y * 3 + 1] += G(i); rowMean[y * 3 + 2] += B(i); rowN[y]++;
+  }
+  const seen = new Uint8Array(N);
+  let reclaimed = 0;
+  const comp = [];
+  for (let s = 0; s < N; s++) {
+    if (bg[s] || seen[s]) continue;
+    // BFS one non-bg component
+    comp.length = 0;
+    const st = [s]; seen[s] = 1;
+    let sum = [0, 0, 0];
+    while (st.length) {
+      const i = st.pop(); comp.push(i);
+      sum[0] += R(i); sum[1] += G(i); sum[2] += B(i);
+      const x = i % W, y = (i / W) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+        const j = ny * W + nx;
+        if (!bg[j] && !seen[j]) { seen[j] = 1; st.push(j); }
+      }
+    }
+    if (comp.length > 20000) continue; // real furniture is one huge component
+    // does this small island look like the bg around its rows?
+    let close = 0, denom = 0;
+    for (const i of comp) {
+      const y = (i / W) | 0;
+      if (!rowN[y]) continue;
+      denom++;
+      const d = Math.hypot(
+        R(i) - rowMean[y * 3] / rowN[y],
+        G(i) - rowMean[y * 3 + 1] / rowN[y],
+        B(i) - rowMean[y * 3 + 2] / rowN[y]
+      );
+      if (d < 58) close++;
+    }
+    if (denom && close / denom > 0.5) { for (const i of comp) bg[i] = 1; reclaimed += comp.length; }
+  }
+  console.log("islands reclaimed as bg:", reclaimed);
+}
+
 // ---- 2. classify the furniture pixels ----
 const wood = new Uint8Array(N);
 const fabric = new Uint8Array(N);
@@ -48,9 +96,14 @@ for (let i = 0; i < N; i++) {
   // glass tabletop ellipse: what shows through it keeps its original pixels
   const ex = (x - 505) / 205, ey = (y - 300) / 92;
   if (ex * ex + ey * ey < 1) { nOther++; continue; }
+  // floor seen through the table-stem arch windows: inside these boxes only
+  // strongly warm pixels are wood — the greyer floor shadow stays untinted
+  const inArch = (x > 465 && x < 565 && y > 402 && y < 472) ||
+                 (x > 475 && x < 555 && y > 488 && y < 548);
+  if (inArch && r - b < 30) { nOther++; continue; }
   const warm = r - b;
-  if (L < 112 && warm > 18) { wood[i] = 255; nWood++; }   // dark warm = wood frame
-  else if (L >= 68 && warm > -14) { fabric[i] = 255; nFab++; }
+  if (L < 112 && warm > 20) { wood[i] = 255; nWood++; }   // dark warm = wood frame
+  else if (L >= 68 && warm > 13) { fabric[i] = 255; nFab++; } // warm cream only — grey wall/floor stays
   else nOther++;
 }
 

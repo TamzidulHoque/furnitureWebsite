@@ -1,25 +1,26 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
+import { MODELS } from './modelRegistry.js';
 
-// CLASSIC / NOIR: a real Heaven piece, recoloured live — photo-segmented
-// wood + upholstery masks, hue-preserving canvas blends. No 3D model can
-// be this on-brand: it IS their furniture.
-// MODERN: a real-time 3D velvet sofa (lazy-loaded, three.js only ships
-// to visitors who enter the Modern world).
-const Sofa3D = lazy(() => import('./SofaViewer.jsx'));
+// Two preview engines:
+//  photo — a real Heaven piece, recoloured live (photo-segmented wood +
+//          upholstery masks, hue-preserving canvas blends)
+//  3d    — real-time glTF furniture, lazy-loaded so three.js only ships
+//          to visitors who open a 3D piece
+const ModelViewer = lazy(() => import('./ModelViewer.jsx'));
 
 const BASE = '/img/chairs-studio.webp';
 const MASK_WOOD = '/img/mask-wood.png';
 const MASK_FABRIC = '/img/mask-fabric.png';
 
-const WOODS = [
+const PHOTO_WOODS = [
   { name: 'Rosewood', css: '#5a3b2a', original: true },
   { name: 'Walnut', css: '#6b4a2f', tint: '#6b4a2f', deepen: 0.12, lift: 0.22 },
   { name: 'Golden Oak', css: '#b08347', tint: '#c89a5e', deepen: 0, lift: 0.6 },
   { name: 'Black Lacquer', css: '#211c19', tint: '#3a352f', deepen: 0.55, lift: 0 },
 ];
-const FABRICS = [
+const PHOTO_FABRICS = [
   { name: 'Ivory Jacquard', css: '#e8ddc4', original: true },
   { name: 'Royal Blue Velvet', css: '#27439b', tint: '#27439b', deepen: 0.62 },
   { name: 'Emerald Velvet', css: '#1f5c4a', tint: '#17493b', deepen: 0.72 },
@@ -27,22 +28,32 @@ const FABRICS = [
   { name: 'Charcoal Weave', css: '#4a4a4e', tint: '#55555c', deepen: 0.55 },
 ];
 
-// glTF variant names from the model + leg finishes
-const WOODS_3D = [
-  { name: 'Natural Oak', css: '#9a7648', leg: '#9a7648' },
-  { name: 'Walnut', css: '#5f4630', leg: '#5f4630' },
-  { name: 'Espresso', css: '#37281c', leg: '#37281c' },
-  { name: 'Black', css: '#1d1d1f', leg: '#1d1d1f' },
-];
-const FABRICS_3D = [
-  { name: 'Champagne Velvet', css: '#d9c7a8', variant: 'Champagne' },
-  { name: 'Navy Velvet', css: '#2b3a5e', variant: 'Navy' },
-  { name: 'Dove Gray Velvet', css: '#8a8a8f', variant: 'Gray' },
-  { name: 'Black Velvet', css: '#262626', variant: 'Black' },
-  { name: 'Pale Pink Velvet', css: '#d8a8a3', variant: 'Pale Pink' },
-];
-
-const PIECES = ['Sofa Set', 'Bed', 'Dining Set', 'Office Desk', 'Accent Chairs', 'Something Custom'];
+// Per-world piece lists. A piece with a `preview` drives the stage;
+// the rest still feed the WhatsApp brief.
+const PIECE_SETS = {
+  classic: [
+    { label: 'Accent Chairs', preview: { type: 'photo' } },
+    { label: 'Damask Chair', preview: { type: '3d', model: 'damaskChair' } },
+    { label: 'Sofa Set' },
+    { label: 'Bed' },
+    { label: 'Dining Set' },
+    { label: 'Something Custom' },
+  ],
+  modern: [
+    { label: 'Sofa', preview: { type: '3d', model: 'glamSofa' } },
+    { label: 'Lounge Chair', preview: { type: '3d', model: 'sheenChair' } },
+    { label: 'Bed' },
+    { label: 'Office Desk' },
+    { label: 'Something Custom' },
+  ],
+  noir: [
+    { label: 'Leather Sofa', preview: { type: '3d', model: 'leatherSofa' } },
+    { label: 'Accent Chairs', preview: { type: 'photo' } },
+    { label: 'Dining Set' },
+    { label: 'Console' },
+    { label: 'Something Custom' },
+  ],
+};
 
 function loadImg(src) {
   return new Promise((res, rej) => {
@@ -55,19 +66,37 @@ function loadImg(src) {
 
 export default function Configurator() {
   const { m } = useMode();
-  const is3D = m.key === 'modern';
+  const pieces = PIECE_SETS[m.key];
   const canvasRef = useRef(null);
   const assets = useRef(null);
   const [ready, setReady] = useState(false);
+  const [piece, setPiece] = useState(0);
+  const [preview, setPreview] = useState(pieces[0].preview);
   const [wood, setWood] = useState(0);
   const [fabric, setFabric] = useState(0);
-  const [piece, setPiece] = useState(0);
 
-  const woods = is3D ? WOODS_3D : WOODS;
-  const fabrics = is3D ? FABRICS_3D : FABRICS;
+  const is3D = preview?.type === '3d';
+  const model = is3D ? MODELS[preview.model] : null;
+  const woods = is3D ? (model.wood?.options ?? null) : PHOTO_WOODS;
+  const fabrics = is3D ? model.fabric.options : PHOTO_FABRICS;
 
-  // selections don't carry meaning across worlds
-  useEffect(() => { setWood(0); setFabric(0); }, [m.key]);
+  // world changed: reset the stage to that world's first piece
+  useEffect(() => {
+    setPiece(0);
+    setPreview(PIECE_SETS[m.key][0].preview);
+    setWood(0);
+    setFabric(0);
+  }, [m.key]);
+
+  const choosePiece = (i) => {
+    setPiece(i);
+    const p = pieces[i].preview;
+    if (p) {
+      setPreview(p);
+      setWood(0);
+      setFabric(0);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -119,23 +148,23 @@ export default function Configurator() {
       ctx.drawImage(layer, 0, 0);
     };
 
-    applyMaterial(mw, WOODS[wood]);
-    applyMaterial(mf, FABRICS[fabric]);
+    applyMaterial(mw, PHOTO_WOODS[wood]);
+    applyMaterial(mf, PHOTO_FABRICS[fabric]);
   }, [is3D, ready, wood, fabric]);
 
   const message =
     `Hello Heaven Furniture Mart! I designed a piece on your site and would like a quote.\n` +
     `• Style world: ${m.name}\n` +
-    `• Piece: ${PIECES[piece]}\n` +
-    `• Wood finish: ${woods[wood].name}\n` +
+    `• Piece: ${pieces[piece].label}\n` +
+    (woods ? `• Wood finish: ${woods[wood].name}\n` : '') +
     `• Upholstery: ${fabrics[fabric].name}`;
 
   return (
     <div className="config rv" id="configurator">
       <div className="config-canvas-wrap">
         {is3D ? (
-          <Suspense fallback={<img src="/img/office-lounge.webp" alt="Loading 3D preview…" />}>
-            <Sofa3D variant={FABRICS_3D[fabric]?.variant ?? 'Champagne'} legColor={WOODS_3D[wood]?.leg ?? '#9a7648'} />
+          <Suspense fallback={<div className="config-loading">Preparing 3D preview…</div>}>
+            <ModelViewer modelKey={preview.model} fabricIdx={fabric} woodIdx={wood} />
           </Suspense>
         ) : ready ? (
           <canvas ref={canvasRef} aria-label="Live preview of your fabric and wood choices on a Heaven chair set" />
@@ -143,7 +172,7 @@ export default function Configurator() {
           <img src={BASE} alt="Heaven accent chair set" />
         )}
         <span className="config-tag">
-          {is3D ? 'Live 3D — drag to turn' : 'Live preview · real Heaven piece'}
+          {is3D ? `Live 3D · ${model.label} — drag to turn` : 'Live preview · real Heaven piece'}
         </span>
       </div>
 
@@ -152,31 +181,35 @@ export default function Configurator() {
         <p>Pick a direction — our designers take it from there, around your exact space.</p>
 
         <div className="config-group">
-          <div className="config-label"><span>The Piece</span><b>{PIECES[piece]}</b></div>
+          <div className="config-label"><span>The Piece</span><b>{pieces[piece].label}</b></div>
           <div className="pieces">
-            {PIECES.map((p, i) => (
-              <button key={p} className={`piece-btn${piece === i ? ' active' : ''}`} onClick={() => setPiece(i)}>
-                {p}
+            {pieces.map((p, i) => (
+              <button key={p.label} className={`piece-btn${piece === i ? ' active' : ''}`} onClick={() => choosePiece(i)}>
+                {p.preview && <span className="piece-dot" aria-hidden="true">{p.preview.type === '3d' ? '◈' : '◉'}</span>}
+                {p.label}
               </button>
             ))}
           </div>
+          <p className="pieces-legend">◈ live 3D preview &nbsp;·&nbsp; ◉ live photo preview</p>
         </div>
 
-        <div className="config-group">
-          <div className="config-label"><span>Wood Finish</span><b>{woods[wood].name}</b></div>
-          <div className="swatches">
-            {woods.map((w, i) => (
-              <button
-                key={w.name}
-                className={`swatch${wood === i ? ' active' : ''}`}
-                style={{ background: w.css }}
-                title={w.name}
-                aria-label={`Wood: ${w.name}`}
-                onClick={() => setWood(i)}
-              />
-            ))}
+        {woods && (
+          <div className="config-group">
+            <div className="config-label"><span>Wood Finish</span><b>{woods[wood].name}</b></div>
+            <div className="swatches">
+              {woods.map((w, i) => (
+                <button
+                  key={w.name}
+                  className={`swatch${wood === i ? ' active' : ''}`}
+                  style={{ background: w.css }}
+                  title={w.name}
+                  aria-label={`Wood: ${w.name}`}
+                  onClick={() => setWood(i)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="config-group">
           <div className="config-label"><span>Upholstery</span><b>{fabrics[fabric].name}</b></div>

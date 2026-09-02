@@ -28,7 +28,7 @@ export default function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</span>
-          <span>3D sofa preview © 2021 Wayfair, CC BY 4.0</span>
+          <span>3D previews: Khronos glTF samples © Wayfair · DGG · Poly Haven (CC BY 4.0)</span>
           <span>Bespoke furniture &amp; interior styling — Chattogram, Bangladesh</span>
         </div>
       </div>

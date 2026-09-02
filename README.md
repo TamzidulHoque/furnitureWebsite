@@ -18,10 +18,15 @@ One skeleton, three skins: every colour, radius, easing curve and photo set is a
 CSS design token that swaps under a "material wipe" transition. The palette is
 sampled **from Heaven's actual logo file** (`#34514f` teal / `#dda741` gold).
 
-The bespoke configurator recolours a **real Heaven piece** (photo-segmented wood
-and upholstery masks, hue-preserving canvas blends) and sends the visitor's
-choices — style world, piece, wood finish, fabric — straight into a prefilled
-WhatsApp message. The interactive toy *is* the call to action.
+The bespoke configurator has two engines: a **real Heaven piece** recoloured
+live (photo-segmented wood/upholstery masks, hue-preserving canvas blends) and
+**four real-time 3D models** (Draco-compressed glTF, material variants +
+re-upholstery, lazy-loaded so three.js never touches the initial bundle).
+Every world gets both. The visitor's choices — style world, piece, wood,
+fabric — land in a prefilled WhatsApp message: the toy *is* the CTA.
+
+A two-minute real showroom walkthrough video (click-to-play, zero preload)
+and a film strip of live inventory shots anchor the trust story.
 
 ## Stack
 
