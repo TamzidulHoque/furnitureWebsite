@@ -19,8 +19,9 @@ export default function Header() {
           <img src={m.logo} alt={SITE.name} width="196" height="67" />
         </a>
         <nav className="nav" aria-label="Primary">
-          <a href="#collections">Collections</a>
-          <a href="#bespoke">Bespoke</a>
+          <a href="#room">Shop the Room</a>
+          <a href="#collections">Collection</a>
+          <a href="#finder">Find Yours</a>
           <a href="#why">Why Heaven</a>
           <a href="#visit">Visit Us</a>
         </nav>

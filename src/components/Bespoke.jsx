@@ -1,5 +1,5 @@
 import Ornament from './Ornament.jsx';
-import Configurator from './Configurator.jsx';
+import Finder from './Finder.jsx';
 
 const STEPS = [
   {
@@ -45,7 +45,7 @@ export default function Bespoke() {
           ))}
         </div>
 
-        <Configurator />
+        <Finder />
       </div>
     </section>
   );

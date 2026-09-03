@@ -4,7 +4,8 @@ import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import Marquee from './components/Marquee.jsx';
 import Intro from './components/Intro.jsx';
-import Collections from './components/Collections.jsx';
+import ShopTheRoom from './components/ShopTheRoom.jsx';
+import Collection from './components/Collection.jsx';
 import Bespoke from './components/Bespoke.jsx';
 import Ledger from './components/Ledger.jsx';
 import FeedRail from './components/FeedRail.jsx';
@@ -27,7 +28,8 @@ function Page() {
         <Hero />
         <Marquee />
         <Intro />
-        <Collections />
+        <ShopTheRoom />
+        <Collection />
         <Bespoke />
         <Ledger />
         <Proof />

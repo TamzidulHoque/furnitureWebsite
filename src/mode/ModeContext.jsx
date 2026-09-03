@@ -21,12 +21,6 @@ export const MODES = {
     heroCaption: 'Four-poster bed · hand-finished, Agrabad workshop',
     heroSub:
       'Hand-carved frames, gilded edges, upholstery cut to order — heirloom pieces from our Agrabad atelier.',
-    tiles: [
-      { img: '/img/living-royal.webp', name: 'Living', tag: 'Sofas · Tables · Consoles', span: 'span-7' },
-      { img: '/img/bed-gold.webp', name: 'Bedroom', tag: 'Beds · Wardrobes', span: 'span-5', tall: true },
-      { img: '/img/dining-floral.webp', name: 'Dining', tag: 'Tables · Chairs · Cabinets', span: 'span-5' },
-      { img: '/img/cabinet-gold.webp', name: 'Study & Display', tag: 'Cabinets · Shelving', span: 'span-7' },
-    ],
   },
   modern: {
     key: 'modern',
@@ -43,12 +37,6 @@ export const MODES = {
     heroCaption: 'Executive workspace · built to measure',
     heroSub:
       'Clean lines, light woods, quiet comfort — workspaces and homes built to your space, not off a shelf.',
-    tiles: [
-      { img: '/img/bed-white.webp', name: 'Bedroom', tag: 'Beds · Side Tables', span: 'span-7' },
-      { img: '/img/chair-ergo.webp', name: 'Seating', tag: 'Task · Executive', span: 'span-5', tall: true },
-      { img: '/img/office-director.webp', name: 'Office', tag: 'Desks · Storage', span: 'span-5' },
-      { img: '/img/office-conf.webp', name: 'Workspace', tag: 'Conference · Teams', span: 'span-7' },
-    ],
   },
   noir: {
     key: 'noir',
@@ -65,11 +53,6 @@ export const MODES = {
     heroCaption: 'Lacquered console · brass detail',
     heroSub:
       'Dark lacquer, brass hardware, low light — statement pieces made to measure for rooms with presence.',
-    tiles: [
-      { img: '/img/console-noir.webp', name: 'Living', tag: 'Consoles · Storage', span: 'span-7' },
-      { img: '/img/chair-ergo.webp', name: 'Seating', tag: 'Executive · Study', span: 'span-5', tall: true },
-      { img: '/img/dining-noir.webp', name: 'Dining', tag: 'Tables · Chairs', span: 'span-12' },
-    ],
   },
 };
 

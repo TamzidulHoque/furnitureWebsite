@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SITE } from '../site.config.js';
+import { srcset } from '../lib/img.js';
 import { useMode } from '../mode/ModeContext.jsx';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -38,10 +39,10 @@ export default function Intro() {
           </p>
           <div className="intro-collage" aria-hidden="true">
             <figure className="ic-photo ic-a" ref={photoA}>
-              <img src={m.introImgs[0]} alt="" loading="lazy" />
+              <img src={m.introImgs[0]} srcSet={srcset(m.introImgs[0])} sizes="30vw" alt="" loading="lazy" />
             </figure>
             <figure className="ic-photo ic-b" ref={photoB}>
-              <img src={m.introImgs[1]} alt="" loading="lazy" />
+              <img src={m.introImgs[1]} srcSet={srcset(m.introImgs[1])} sizes="26vw" alt="" loading="lazy" />
             </figure>
           </div>
         </div>

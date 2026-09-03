@@ -6,7 +6,9 @@ import ModeSwitch from './ModeSwitch.jsx';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// every processed image ships a half-size sibling: name.webp / name-sm.webp
+// The hero keeps its own descriptors rather than the shared lib/img helper:
+// these must match the <link rel="preload" imagesrcset> in index.html exactly,
+// and 760w is what makes a DPR-2 phone pick the small file for the LCP image.
 const SIZES = '(max-width: 900px) 100vw, 42vw';
 const srcset = (src) => `${src.replace('.webp', '-sm.webp')} 760w, ${src} 1400w`;
 const setImg = (el, src) => { el.srcset = srcset(src); el.src = src; };

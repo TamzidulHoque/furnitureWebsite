@@ -18,20 +18,37 @@ One skeleton, three skins: every colour, radius, easing curve and photo set is a
 CSS design token that swaps under a "material wipe" transition. The palette is
 sampled **from Heaven's actual logo file** (`#34514f` teal / `#dda741` gold).
 
-The bespoke configurator has two engines: a **real Heaven piece** recoloured
-live (photo-segmented wood/upholstery masks, hue-preserving canvas blends) and
-**four real-time 3D models** (Draco-compressed glTF, material variants +
-re-upholstery, lazy-loaded so three.js never touches the initial bundle).
-Every world gets live previews. The visitor's choices — style world, piece, wood,
-fabric — land in a prefilled WhatsApp message: the toy *is* the CTA.
+## Finding a piece — three ways in
 
-A two-minute real showroom walkthrough video (click-to-play, zero preload)
-and a film strip of live inventory shots anchor the trust story.
+Furniture is a considered purchase, so no page here is a dead end.
+
+1. **Shop the Room** — a finished room per world with gold hotspots on it. A dot
+   is either a real catalogue piece (opens Quick View) or a real part of the
+   workshop (jumps to that shelf, pre-filtered).
+2. **The Collection** — 22 pieces in six categories with live search across
+   names, categories and tags. Filtering is a GSAP **Flip** animation: cards fly
+   to their new positions instead of blinking. A search looks through the whole
+   workshop, never just the open tab.
+3. **Design Finder** — three questions (room → feeling → size). The answer to
+   question two re-skins the entire site, and the result is three real pieces
+   plus a written brief.
+
+Every route ends in **Quick View**: bigger photo, the wood and upholstery we
+offer on that piece, your room size, and a WhatsApp message already written.
+Prev/next and arrow keys move through the pieces without closing.
+
+## The catalogue is owner-editable
+
+The whole shop is one plain-data file, [src/data/catalog.js](src/data/catalog.js),
+commented for a non-developer. Drop a photo into `public/img/`, copy a block,
+change the fields — no build knowledge, no engineer, no 3D pipeline.
 
 ## Stack
 
-Vite · React · GSAP + ScrollTrigger · Lenis · Canvas 2D (configurator) ·
-self-hosted fonts (Cormorant Garamond / Jost) — works offline, no CDN calls.
+Vite · React · GSAP (ScrollTrigger + Flip) · Lenis · self-hosted fonts
+(Cormorant Garamond / Jost) — works offline, no CDN calls. A two-minute real
+showroom walkthrough (click-to-play, zero preload) and a film strip of live
+inventory shots anchor the trust story.
 
 ## Commands
 
@@ -41,8 +58,8 @@ npm run dev            # local dev server
 npm run build          # production build -> dist/
 npm run assets:logo    # re-extract logo + palette from assets/logo.jpg
 npm run assets:images  # re-run crop/grade/webp pipeline from assets/
-node scripts/make-masks.mjs   # regenerate configurator masks
 node scripts/shoot.mjs        # screenshot all modes (needs `npx playwright install chromium`)
+node scripts/shoot-flow.mjs classic desktop   # drive filter → search → quick view → finder
 ```
 
 ## Editing contact info
