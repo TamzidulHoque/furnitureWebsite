@@ -1,6 +1,6 @@
 // Dense film strip of real inventory shots from Heaven's feed —
 // credibility texture, rendered small on purpose.
-const N = 21;
+const N = 28;
 const thumbs = Array.from({ length: N }, (_, i) => `/img/feed/t${String(i + 1).padStart(2, '0')}.webp`);
 
 export default function FeedRail() {
