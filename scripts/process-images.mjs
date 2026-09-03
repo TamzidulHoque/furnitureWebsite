@@ -30,6 +30,15 @@ const MANIFEST = [
   // promo copy fills the left half of both — crop past it for a tight product shot
   { src: `${A}/734008893_1670206525110840_4556845434530645596_n.jpg`, out: 'chair-exec-black',crop: [0.505, 0.16, 0.96, 1] },
   { src: `${A}/736420675_1670206595110833_5351120681345196574_n.jpg`, out: 'chair-exec-wood', crop: [0.505, 0.14, 1, 1] },
+  // ---------- STUDIO product shots (Heaven's own watermark kept — it is their mark) ----------
+  { src: `${A}/489389872_1254504870014343_1566243613082510479_n.jpg`, out: 'chest-gilded',      crop: [0.03, 0.10, 0.88, 1] },
+  { src: `${A}/490299398_1257364003061763_8109435534264629788_n.jpg`, out: 'dresser-carved',    crop: [0.02, 0.02, 1, 0.90] },
+  { src: `${A}/496926353_1285606276904202_2460354133759773698_n.jpg`, out: 'chairs-barrel',     crop: [0, 0.18, 1, 0.95] },
+  // ---------- REAL showroom photography ----------
+  { src: `${A}/495450806_1285606443570852_7291400656447408694_n.jpg`, out: 'dining-marble-gold',crop: [0, 0.10, 1, 1], sat: 0.95 },
+  { src: `${A}/497458359_1289388343192662_3550378067329039407_n.jpg`, out: 'dining-glass-round',crop: [0.02, 0.05, 0.95, 0.87], sat: 0.95 },
+  { src: `${A}/637060112_1545124897619004_4741334533607390088_n.jpg`, out: 'chaise-gold',       crop: [0, 0.18, 0.96, 0.82], sat: 0.95 },
+  { src: `${A}/651049436_1565230802275080_8697599286154393697_n.jpg`, out: 'dining-marble-oval',crop: [0.02, 0.10, 1, 1], sat: 0.95 },
   // ---------- REAL photography (clean, portrait) ----------
   { src: `${A}/494195147_1273440371454126_9553634298751690_n.jpg`,    out: 'bed-hero',        crop: [0, 0, 1, 1], sat: 0.96, w: 1600 },
   { src: `${A}/498158806_1291260873005409_1550412438002136855_n.jpg`, out: 'showroom-real',   crop: [0, 0, 1, 1], sat: 0.95, w: 1400 },
