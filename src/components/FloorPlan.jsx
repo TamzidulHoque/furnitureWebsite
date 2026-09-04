@@ -124,7 +124,7 @@ export default function FloorPlan({ active, counts, onPick, onPeek }) {
   return (
     <svg
       ref={svg}
-      className="fp"
+      className="fplan"
       viewBox={`0 0 ${W} ${H}`}
       role="group"
       aria-label="Floor plan — choose a room"

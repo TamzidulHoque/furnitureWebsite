@@ -1147,7 +1147,7 @@ section { position: relative; }
   gap: clamp(24px, 3vw, 50px);
   margin-bottom: clamp(40px, 5vw, 74px);
 }
-.fp { width: 100%; height: auto; display: block; overflow: visible; }
+.fplan { width: 100%; height: auto; display: block; overflow: visible; }
 
 .fp-wall {
   stroke: var(--paper-ink);
