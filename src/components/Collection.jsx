@@ -26,10 +26,11 @@ const matches = (p, q) => {
 const worldFirst = (list, world) =>
   [...list].sort((a, b) => (a.world === world ? 0 : 1) - (b.world === world ? 0 : 1));
 
-const COUNTS = PLAN_ROOMS.reduce((acc, r) => {
-  acc[r.key] = CATALOG.filter((p) => p.room === r.key).length;
-  return acc;
-}, {});
+const countRooms = (list) =>
+  PLAN_ROOMS.reduce((acc, r) => {
+    acc[r.key] = list.filter((p) => p.room === r.key).length;
+    return acc;
+  }, {});
 
 export default function Collection() {
   const { m } = useMode();
@@ -40,9 +41,13 @@ export default function Collection() {
   const gridRef = useRef(null);
   const firstRun = useRef(true);
 
+  // what the search left standing, before a room is chosen — the plan counts
+  // come from this, so typing "velvet" redraws the house as a velvet map
+  const searched = useMemo(() => CATALOG.filter((p) => matches(p, q)), [q]);
+  const counts = useMemo(() => countRooms(searched), [searched]);
   const shown = useMemo(
-    () => worldFirst(CATALOG.filter((p) => (!room || p.room === room) && matches(p, q)), m.key),
-    [room, q, m.key],
+    () => worldFirst(searched.filter((p) => !room || p.room === room), m.key),
+    [searched, room, m.key],
   );
 
   // FLIP: record where every piece sits, let React re-render, then send
@@ -166,12 +171,12 @@ export default function Collection() {
         </div>
 
         <div className="plan-wrap rv" data-rv-delay="0.15">
-          <FloorPlan active={room} counts={COUNTS} onPick={pickRoom} onPeek={setPeek} />
+          <FloorPlan active={room} counts={counts} onPick={pickRoom} onPeek={setPeek} searching={!!q} />
           <div className="plan-side">
             <div className="plan-now">
               <span className="plan-now-k">{here ? here.label : 'The whole house'}</span>
               <span className="plan-now-n">
-                {q ? `${shown.length} matching` : `${here ? COUNTS[here.key] : CATALOG.length} pieces`}
+                {q ? `${shown.length} matching` : `${here ? counts[here.key] : CATALOG.length} pieces`}
               </span>
               {(room || q) && (
                 <button className="linkish" onClick={showAll}>Show the whole house</button>
@@ -198,7 +203,8 @@ export default function Collection() {
           <div className={`wall${peek ? ' peeking' : ''}`} ref={gridRef}>
             {shown.map((p, i) => (
               <article
-                className={`pc pw${i % 9} pw-d${i % 3}${peek && p.room === peek ? ' lit' : ''}`}
+                // a photo rescued from a small original hangs in a small frame
+                className={`pc ${p.soft ? 'pw-soft' : `pw${i % 9}`} pw-d${i % 3}${peek && p.room === peek ? ' lit' : ''}`}
                 key={p.id}
                 data-flip-id={p.id}
               >
@@ -212,7 +218,7 @@ export default function Collection() {
                         <img
                           src={p.img}
                           srcSet={srcset(p.img)}
-                          sizes="(max-width: 700px) 46vw, 34vw"
+                          sizes="(max-width: 1000px) 47vw, 34vw"
                           alt={p.name}
                           loading="lazy"
                           style={p.pos ? { objectPosition: p.pos } : undefined}

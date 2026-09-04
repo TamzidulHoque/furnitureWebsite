@@ -21,8 +21,7 @@ export default function Ledger() {
             Why hundreds of homes chose Heaven.
           </h2>
           <p className="lede">
-            Seven promises, written the way our workshop writes an order — plainly,
-            and kept every time.
+            Written plainly, and kept on every order.
           </p>
         </div>
         <div className="ledger-rows">

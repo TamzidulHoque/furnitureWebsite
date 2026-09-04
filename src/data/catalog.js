@@ -18,6 +18,8 @@
      tags     extra search words (the search box reads these)
      finish   which swatch rows Quick View shows: ['wood'] ['fabric'] or both
      hot      true = badge on the card ("Most Asked For")
+     soft     optional — true for a photo rescued from a small original.
+              It is hung in a narrow frame, where the softness does not show.
      pos      optional — which part of a wide photo the card should show,
               e.g. '25% 25%' pulls the crop to the upper left. Leave it out
               and the card centres the photo.
@@ -356,6 +358,7 @@ export const CATALOG = [
     spec: 'Four glass doors · adjustable shelves · closed base cupboards',
     tags: ['cabinet', 'showcase', 'storage', 'display', 'glass', 'wood', 'carved'],
     finish: ['wood'],
+    soft: true,
   },
   {
     id: 'carved-showcase',
@@ -368,6 +371,7 @@ export const CATALOG = [
     spec: 'Hand-carved crown · internal lighting · lockable base storage',
     tags: ['cabinet', 'showcase', 'storage', 'display', 'glass', 'carved', 'crown'],
     finish: ['wood'],
+    soft: true,
   },
   {
     id: 'light-wardrobe',
@@ -380,6 +384,7 @@ export const CATALOG = [
     spec: 'Two or three doors · hanging rail and shelves · mirror optional',
     tags: ['wardrobe', 'storage', 'almirah', 'bedroom', 'doors', 'light', 'veneer'],
     finish: ['wood'],
+    soft: true,
   },
   {
     id: 'fluted-wardrobe',
@@ -392,6 +397,7 @@ export const CATALOG = [
     spec: 'Two doors · carved detail band · long steel or brass handles',
     tags: ['wardrobe', 'storage', 'almirah', 'bedroom', 'fluted', 'dark', 'carved'],
     finish: ['wood'],
+    soft: true,
   },
   {
     id: 'lacquer-console',

@@ -1365,15 +1365,29 @@ section { position: relative; }
   box-shadow: 0 26px 44px -14px rgba(0, 0, 0, 0.8);
 }
 
-@media (max-width: 820px) {
-  .salon { padding: 26px 12px 34px; }
-  .wall { --g: 14px; }
-  .wall .pc { flex: 0 0 calc(50% - 7px); }
-  .pw0, .pw2, .pw4, .pw6, .pw8 { --drop: 14px; }
-  .pw1, .pw3, .pw5, .pw7 { --drop: 34px; }
+/* Below a laptop the narrow slots (25%, 27%) fall under 200px and the hang
+   turns into a scatter of stamps — go two across well before the phone. */
+@media (max-width: 1000px) {
+  .wall { --g: clamp(14px, 2vw, 26px); }
+  .wall .pc { flex: 0 0 calc(50% - var(--g) / 2); }
+  .pw0, .pw2, .pw4, .pw6, .pw8 { --drop: 16px; }
+  .pw1, .pw3, .pw5, .pw7 { --drop: 40px; }
   .pw3, .pw7 { --ar: 4 / 4.8; }
   .pw4, .pw8 { --ar: 4 / 3.5; }
+  .wall .framed { outline-offset: 6px; }
+}
+@media (max-width: 620px) {
+  .salon { padding: 26px 12px 34px; }
   .wall .framed { outline-offset: 5px; }
   .wall .pc-meta h3 { font-size: 17px; }
   .wall .pc-meta span { font-size: 11.5px; }
 }
+
+/* a search redraws the plan: rooms it emptied step back */
+.fp-room.empty { opacity: 0.32; }
+.fp-room.empty .fp-count { fill: var(--paper-ink-soft); }
+
+/* Four photos came off a 206px original. A salon hang can carry them:
+   in a narrow frame the softness reads as distance, not as a bad picture. */
+.pw-soft { --w: 23%; --ar: 4 / 4.5; --drop: 48px; }
+@media (max-width: 1000px) { .pw-soft { --w: 50%; --drop: 30px; } }

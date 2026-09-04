@@ -81,7 +81,7 @@ const arc = (d) =>
     ? `M ${d.x} ${d.y - d.r} A ${d.r} ${d.r} 0 0 1 ${d.x + d.r} ${d.y}`
     : `M ${d.x - d.r} ${d.y} A ${d.r} ${d.r} 0 0 1 ${d.x} ${d.y + d.r}`;
 
-export default function FloorPlan({ active, counts, onPick, onPeek }) {
+export default function FloorPlan({ active, counts, onPick, onPeek, searching }) {
   const svg = useRef(null);
 
   // The plan draws itself the first time it comes into view. This runs off an
@@ -143,10 +143,11 @@ export default function FloorPlan({ active, counts, onPick, onPeek }) {
 
       {PLAN_ROOMS.map((r) => {
         const on = active === r.key;
+        const empty = searching && !counts[r.key];
         return (
           <g
             key={r.key}
-            className={`fp-room${on ? ' on' : ''}`}
+            className={`fp-room${on ? ' on' : ''}${empty ? ' empty' : ''}`}
             role="button"
             tabIndex={0}
             aria-pressed={on}

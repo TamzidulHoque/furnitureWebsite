@@ -32,13 +32,13 @@
       .no-boot #boot { display: none; }
       #boot svg path {
         stroke-dasharray: 1; stroke-dashoffset: 1;
-        animation: bootDraw 0.85s ease-out forwards;
+        animation: bootDraw 0.62s ease-out forwards;
       }
-      #boot svg path:nth-child(2) { animation-delay: 0.4s; }
+      #boot svg path:nth-child(2) { animation-delay: 0.26s; }
       #boot .boot-word {
         font-family: Georgia, serif; font-size: 12px; letter-spacing: 0.42em;
         color: #b8c5bf; text-transform: uppercase;
-        opacity: 0; animation: bootFade 0.5s ease-out 0.55s forwards;
+        opacity: 0; animation: bootFade 0.45s ease-out 0.38s forwards;
       }
       @keyframes bootDraw { to { stroke-dashoffset: 0; } }
       @keyframes bootFade { to { opacity: 1; } }

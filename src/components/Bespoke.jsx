@@ -30,8 +30,7 @@ export default function Bespoke() {
             Not from a shelf. <em>From a conversation.</em>
           </h2>
           <p className="lede">
-            Bespoke is not an option here — it is the whole house. Three steps stand
-            between your idea and your room.
+            Bespoke is not an option here — it is the whole house.
           </p>
         </div>
 

@@ -130,6 +130,16 @@ h2.display { font-size: clamp(34px, 4.6vw, 58px); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent-ink); }
 .sec-dark .btn-ghost:hover { color: var(--accent); }
 
+/* One visible ring for the whole site. Without it the browser's black
+   hairline is the only focus cue, and on the teal header or a gold frame
+   that is no cue at all. :where() keeps specificity at zero so any
+   component can still draw its own. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
 /* ── framed image (the editorial “contained” treatment) ───────── */
 .framed {
   position: relative;

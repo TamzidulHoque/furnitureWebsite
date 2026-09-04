@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ModeProvider, useMode } from './mode/ModeContext.jsx';
 import { useLenis, useReveals } from './hooks/useMotion.js';
 import Header from './components/Header.jsx';
@@ -19,6 +20,8 @@ function Page() {
   const { mode } = useMode();
   useLenis();
   useReveals(mode);
+  // the entrance curtain waits on this, not on window.load
+  useEffect(() => { window.__hfmMounted?.(); }, []);
   return (
     <>
       <Header />
