@@ -3,19 +3,20 @@ import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import Ornament from './Ornament.jsx';
 import QuickView from './QuickView.jsx';
+import FloorPlan, { PLAN_ROOMS } from './FloorPlan.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
 import { srcset } from '../lib/img.js';
-import { CATALOG, CATEGORIES, countFor } from '../data/catalog.js';
+import { CATALOG } from '../data/catalog.js';
 
 gsap.registerPlugin(Flip);
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// search reads name, category and the tag list
+// search reads name, category, room and the tag list
 const matches = (p, q) => {
   if (!q) return true;
-  const hay = `${p.name} ${p.cat} ${p.blurb} ${p.tags.join(' ')}`.toLowerCase();
+  const hay = `${p.name} ${p.cat} ${p.room} ${p.blurb} ${p.tags.join(' ')}`.toLowerCase();
   return q.toLowerCase().split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
 };
 
@@ -24,21 +25,27 @@ const matches = (p, q) => {
 const worldFirst = (list, world) =>
   [...list].sort((a, b) => (a.world === world ? 0 : 1) - (b.world === world ? 0 : 1));
 
+const COUNTS = PLAN_ROOMS.reduce((acc, r) => {
+  acc[r.key] = CATALOG.filter((p) => p.room === r.key).length;
+  return acc;
+}, {});
+
 export default function Collection() {
   const { m } = useMode();
-  const [cat, setCat] = useState('all');
+  const [room, setRoom] = useState(null);      // null = the whole house
+  const [peek, setPeek] = useState(null);      // room under the cursor
   const [q, setQ] = useState('');
   const [openId, setOpenId] = useState(null);
   const gridRef = useRef(null);
   const firstRun = useRef(true);
 
   const shown = useMemo(
-    () => worldFirst(CATALOG.filter((p) => (cat === 'all' || p.cat === cat) && matches(p, q)), m.key),
-    [cat, q, m.key],
+    () => worldFirst(CATALOG.filter((p) => (!room || p.room === room) && matches(p, q)), m.key),
+    [room, q, m.key],
   );
 
-  // FLIP: record where every card is, let React re-render, then animate
-  // each card from its old box to its new one.
+  // FLIP: record where every piece sits, let React re-render, then send
+  // each one from its old box to its new one.
   const flipState = useRef(null);
   const fromH = useRef(0);
   const prevIds = useRef(null);
@@ -51,7 +58,6 @@ export default function Collection() {
   useLayoutEffect(() => {
     const ids = shown.map((p) => p.id).join();
     if (firstRun.current) { firstRun.current = false; prevIds.current = ids; return; }
-    // typing that does not change the result set should not restage the grid
     if (!flipState.current || ids === prevIds.current) { flipState.current = null; return; }
     prevIds.current = ids;
 
@@ -71,9 +77,9 @@ export default function Collection() {
         gsap.to(els, { opacity: 0, scale: 0.9, duration: 0.32, ease: 'power2.in' }),
     });
 
-    // absolute:true lifts every card out of flow, so without this the grid
-    // collapses to nothing mid-flight and the dark section below rides up
-    // over the animation. Hold the height and ease it to its new value.
+    // absolute:true lifts every piece out of flow, so without this the spread
+    // collapses to nothing mid-flight and the dark section below rides up over
+    // the animation. Hold the height and ease it to its new value.
     gsap.fromTo(grid, { height: fromH.current }, {
       height: toH,
       duration: 0.7,
@@ -83,26 +89,27 @@ export default function Collection() {
     flipState.current = null;
   }, [shown]);
 
-  const pick = (key) => { if (key === cat) return; captureFlip(); setQ(''); setCat(key); };
-  // a search looks through the whole workshop, not just the open tab —
-  // otherwise "velvet" inside Chairs reads as "we don't make it"
-  const type = (v) => { captureFlip(); setQ(v); if (v) setCat('all'); };
+  const pickRoom = (key) => { captureFlip(); setQ(''); setRoom(key); };
+  // a search looks through the whole house, not just the open room —
+  // otherwise "velvet" inside Office reads as "we don't make it"
+  const type = (v) => { captureFlip(); setQ(v); if (v) setRoom(null); };
+  const showAll = () => { captureFlip(); setQ(''); setRoom(null); };
 
   // world switch resets the browse state
-  useEffect(() => { setCat('all'); setQ(''); }, [m.key]);
+  useEffect(() => { setRoom(null); setQ(''); }, [m.key]);
 
-  // the room hotspots and the Finder send people here pre-filtered
+  // the room hotspots and the Finder send people here pointed at a room
   useEffect(() => {
     const on = (e) => {
-      const next = e.detail?.cat;
-      if (!next || next === cat) return;
+      const next = e.detail?.room;
+      if (!next || next === room) return;
       captureFlip();
       setQ('');
-      setCat(next);
+      setRoom(next);
     };
     window.addEventListener('hfm:filter', on);
     return () => window.removeEventListener('hfm:filter', on);
-  }, [cat]);
+  }, [room]);
 
   const openIdx = openId ? shown.findIndex((p) => p.id === openId) : -1;
   const step = (d) => {
@@ -110,19 +117,17 @@ export default function Collection() {
     setOpenId(shown[(openIdx + d + shown.length) % shown.length].id);
   };
 
+  const here = PLAN_ROOMS.find((r) => r.key === room);
+
   return (
     <section className="collection sec-light alt" id="collections">
       <Ornament variant="a" pos="tr" />
       <div className="container">
         <div className="col-head">
           <div className="rv">
-            <p className="eyebrow">
-              {shown.length === CATALOG.length
-                ? `The Collection — ${CATALOG.length} pieces`
-                : `Showing ${shown.length} of ${CATALOG.length}`}
-            </p>
+            <p className="eyebrow">The Collection — {CATALOG.length} pieces</p>
             <h2 className="display" style={{ marginTop: 18 }}>
-              Find your piece. <em>Then make it yours.</em>
+              Walk the house. <em>Take what fits yours.</em>
             </h2>
           </div>
           <p className="lede rv" data-rv-delay="0.1">
@@ -131,40 +136,42 @@ export default function Collection() {
           </p>
         </div>
 
-        <div className="col-tools rv" data-rv-delay="0.15">
-          <div className="cat-tabs" role="tablist" aria-label="Filter by category">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c.key}
-                role="tab"
-                aria-selected={cat === c.key}
-                className={`cat-tab${cat === c.key ? ' active' : ''}`}
-                onClick={() => pick(c.key)}
-              >
-                {c.label}
-                <span className="cat-n">{countFor(c.key)}</span>
-              </button>
-            ))}
-          </div>
-          <div className="col-search">
-            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
-              <circle cx="8.5" cy="8.5" r="5.6" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="12.8" y1="12.8" x2="17.5" y2="17.5" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-            <input
-              type="search"
-              value={q}
-              placeholder="Search — try “chair”, “velvet”, “marble”…"
-              aria-label="Search the collection"
-              onChange={(e) => type(e.target.value)}
-            />
-            {q && <button className="col-clear" onClick={() => type('')} aria-label="Clear search">×</button>}
+        <div className="plan-wrap rv" data-rv-delay="0.15">
+          <FloorPlan active={room} counts={COUNTS} onPick={pickRoom} onPeek={setPeek} />
+          <div className="plan-side">
+            <div className="plan-now">
+              <span className="plan-now-k">{here ? here.label : 'The whole house'}</span>
+              <span className="plan-now-n">
+                {q ? `${shown.length} matching` : `${here ? COUNTS[here.key] : CATALOG.length} pieces`}
+              </span>
+              {(room || q) && (
+                <button className="linkish" onClick={showAll}>Show the whole house</button>
+              )}
+            </div>
+            <div className="col-search">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="5.6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="12.8" y1="12.8" x2="17.5" y2="17.5" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              <input
+                type="search"
+                value={q}
+                placeholder="Search the house…"
+                aria-label="Search the collection"
+                onChange={(e) => type(e.target.value)}
+              />
+              {q && <button className="col-clear" onClick={() => type('')} aria-label="Clear search">×</button>}
+            </div>
           </div>
         </div>
 
-        <div className="pc-grid" ref={gridRef}>
-          {shown.map((p) => (
-            <article className="pc" key={p.id} data-flip-id={p.id}>
+        <div className={`pc-grid${peek ? ' peeking' : ''}`} ref={gridRef}>
+          {shown.map((p, i) => (
+            <article
+              className={`pc pc-s${i % 5}${peek && p.room === peek ? ' lit' : ''}`}
+              key={p.id}
+              data-flip-id={p.id}
+            >
               {/* no aria-label: the card's own text (name, blurb, "Quick View")
                   is the accessible name, so speech and sight agree */}
               <button className="pc-hit" onClick={() => setOpenId(p.id)}>
@@ -173,7 +180,7 @@ export default function Collection() {
                     <img
                       src={p.img}
                       srcSet={srcset(p.img)}
-                      sizes="(max-width: 700px) 46vw, 25vw"
+                      sizes="(max-width: 700px) 46vw, 30vw"
                       alt={p.name}
                       loading="lazy"
                       style={p.pos ? { objectPosition: p.pos } : undefined}

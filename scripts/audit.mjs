@@ -27,11 +27,17 @@ for (const [i, mode] of ['classic', 'modern', 'noir'].entries()) {
   await sweep();
   await page.waitForTimeout(500);
 
-  // every category tab, then a search, then quick view, then a room hotspot
-  const tabs = await page.locator('.cat-tab').count();
-  for (let t = 0; t < tabs; t++) {
-    await page.evaluate((n) => document.querySelectorAll('.cat-tab')[n]?.click(), t);
-    await page.waitForTimeout(320);
+  // every room on the plan, then a search, then quick view, then a hotspot
+  const rooms = await page.locator('.fp-room').count();
+  let roomOk = 0;
+  for (let t = 0; t < rooms; t++) {
+    await page.evaluate((n) => document.querySelectorAll('.fp-room')[n]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true })), t);
+    await page.waitForTimeout(420);
+    if (await page.locator('.pc').count() > 0) roomOk++;
+    await page.evaluate((n) => document.querySelectorAll('.fp-room')[n]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true })), t);
+    await page.waitForTimeout(380);
   }
   await page.fill('.col-search input', 'velvet');
   await page.waitForTimeout(500);
@@ -53,7 +59,7 @@ for (const [i, mode] of ['classic', 'modern', 'noir'].entries()) {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(400);
 
-  console.log(`${mode.padEnd(8)} tabs:${tabs} velvet-hits:${hits} quickview:${qvOpen ? 'ok' : 'FAIL'} hotspot:${hotOpen ? 'ok' : 'FAIL'}`);
+  console.log(`${mode.padEnd(8)} rooms:${roomOk}/${rooms} velvet-hits:${hits} quickview:${qvOpen ? 'ok' : 'FAIL'} hotspot:${hotOpen ? 'ok' : 'FAIL'}`);
 }
 
 // anchors must resolve

@@ -4,16 +4,16 @@ import QuickView from './QuickView.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
 import { srcset } from '../lib/img.js';
-import { CATALOG, CATEGORIES } from '../data/catalog.js';
+import { CATALOG } from '../data/catalog.js';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const ROOMS = [
-  { key: 'beds', label: 'A bedroom', note: 'beds, wardrobes, side tables' },
-  { key: 'sofas', label: 'A living room', note: 'sofas, centre tables, consoles' },
-  { key: 'dining', label: 'A dining room', note: 'tables, chairs, cabinets' },
-  { key: 'office', label: 'An office', note: 'desks, workstations, meeting rooms' },
-  { key: 'chairs', label: 'Just a chair', note: 'seating, task or statement' },
+  { key: 'beds', plan: 'bedroom', planLabel: 'bedroom', label: 'A bedroom', note: 'beds, wardrobes, side tables' },
+  { key: 'sofas', plan: 'living', planLabel: 'living room', label: 'A living room', note: 'sofas, centre tables, consoles' },
+  { key: 'dining', plan: 'dining', planLabel: 'dining room', label: 'A dining room', note: 'tables, chairs, cabinets' },
+  { key: 'office', plan: 'office', planLabel: 'office', label: 'An office', note: 'desks, workstations, meeting rooms' },
+  { key: 'chairs', plan: 'living', planLabel: 'living room', label: 'Just a chair', note: 'seating, task or statement' },
 ];
 
 const WORLDS = [
@@ -73,7 +73,8 @@ export default function Finder() {
   ].filter(Boolean).join('\n');
 
   const browseAll = () => {
-    window.dispatchEvent(new CustomEvent('hfm:filter', { detail: { cat: room } }));
+    const plan = ROOMS.find((r) => r.key === room)?.plan;
+    window.dispatchEvent(new CustomEvent('hfm:filter', { detail: { room: plan } }));
     const target = document.getElementById('collections');
     if (!target) return;
     const y = target.getBoundingClientRect().top + window.scrollY - 70;
@@ -154,7 +155,7 @@ export default function Finder() {
                 </a>
                 <div className="finder-links">
                   <button className="linkish" onClick={browseAll}>
-                    See all {CATEGORIES.find((c) => c.key === room)?.label ?? 'pieces'}
+                    See the whole {ROOMS.find((r) => r.key === room)?.planLabel ?? 'house'}
                   </button>
                   <button className="linkish" onClick={restart}>Start over</button>
                 </div>

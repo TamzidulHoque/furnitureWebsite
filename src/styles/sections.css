@@ -259,47 +259,6 @@
 .col-head p { max-width: 44ch; }
 
 /* filter bar: tabs on the left, live search on the right */
-.col-tools {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px 24px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--hairline-light);
-  margin-bottom: clamp(28px, 3.4vw, 48px);
-}
-.cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
-.cat-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--paper-ink-soft);
-  border: 1px solid transparent;
-  border-radius: var(--radius);
-  transition: color var(--speed) var(--easing), border-color var(--speed) var(--easing),
-              background var(--speed) var(--easing);
-}
-.cat-tab:hover { color: var(--paper-ink); border-color: var(--hairline-light); }
-.cat-tab.active {
-  color: var(--accent-ink);
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
-}
-.cat-n {
-  font-size: 9px;
-  letter-spacing: 0.06em;
-  opacity: 0.65;
-  padding: 2px 5px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  line-height: 1;
-}
 .col-search {
   position: relative;
   display: flex;
@@ -411,7 +370,6 @@
   .pc-meta h3 { font-size: 17px; }
   .pc-meta span { font-size: 11.5px; }
   .col-search { flex: 1 1 100%; min-width: 0; }
-  .cat-tab { padding: 8px 12px; font-size: 10px; }
   .col-head { flex-direction: column; align-items: flex-start; }
 }
 
@@ -1186,4 +1144,144 @@ section { position: relative; }
   .finder-picks { gap: 10px; }
   .fp b { font-size: 14px; }
   .fp span { display: none; }
+}
+
+/* ═══════════════════════ THE FLOOR PLAN ═══════════════════════ */
+.plan-wrap {
+  display: grid;
+  grid-template-columns: 1fr 258px;
+  align-items: center;
+  gap: clamp(24px, 3vw, 50px);
+  margin-bottom: clamp(40px, 5vw, 74px);
+}
+.fp { width: 100%; height: auto; display: block; overflow: visible; }
+
+.fp-wall {
+  stroke: var(--paper-ink);
+  stroke-width: 3;
+  opacity: 0.85;
+  stroke-linecap: square;
+}
+.fp-door {
+  fill: none;
+  stroke: var(--accent-ink);
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.fp-room { cursor: pointer; outline: none; }
+.fp-floor {
+  fill: var(--accent);
+  fill-opacity: 0;
+  transition: fill-opacity var(--speed) var(--easing);
+}
+.fp-room:hover .fp-floor,
+.fp-room:focus-visible .fp-floor { fill-opacity: 0.07; }
+.fp-room.on .fp-floor { fill-opacity: 0.15; }
+.fp-room:focus-visible .fp-floor { stroke: var(--accent-ink); stroke-width: 2; }
+
+.fp-glyph {
+  fill: none;
+  stroke: var(--paper-ink-soft);
+  stroke-width: 1.4;
+  opacity: 0.4;
+  transition: opacity var(--speed) var(--easing), stroke var(--speed) var(--easing);
+}
+.fp-room:hover .fp-glyph { opacity: 0.72; }
+.fp-room.on .fp-glyph { opacity: 1; stroke: var(--accent-ink); }
+
+.fp-label { pointer-events: none; }
+.fp-name {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 500;
+  fill: var(--paper-ink);
+}
+.fp-note {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  fill: var(--paper-ink-soft);
+}
+.fp-count {
+  font-family: var(--font-display);
+  font-size: 30px;
+  fill: var(--accent-ink);
+  text-anchor: end;
+  opacity: 0.55;
+  transition: opacity var(--speed) var(--easing);
+}
+.fp-room:hover .fp-count, .fp-room.on .fp-count { opacity: 1; }
+.fp-room.on .fp-name { fill: var(--accent-ink); }
+
+/* each world draws its own house */
+:root[data-mode='classic'] .fp-wall { stroke-width: 4; }
+:root[data-mode='modern'] .fp-wall { stroke-width: 2; opacity: 0.65; }
+:root[data-mode='modern'] .fp-glyph { stroke-width: 1.1; }
+:root[data-mode='noir'] .fp-wall { stroke: var(--accent); opacity: 0.55; stroke-width: 2.5; }
+:root[data-mode='noir'] .fp-glyph { stroke: var(--accent); opacity: 0.3; }
+:root[data-mode='noir'] .fp-room:hover .fp-glyph { opacity: 0.8; }
+
+/* what you are looking at, and the way to search the whole house */
+.plan-side { display: flex; flex-direction: column; gap: 18px; }
+.plan-now {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hairline-light);
+}
+.plan-now-k {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--paper-ink);
+}
+.plan-now-n {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.plan-now .linkish { align-self: flex-start; margin-top: 6px; font-size: 12px; }
+/* .col-search carries flex: 0 1 320px from the filter bar it used to live in;
+   inside this column that basis becomes a 320px height. */
+.plan-side .col-search { flex: none; }
+
+@media (max-width: 900px) {
+  .plan-wrap { grid-template-columns: 1fr; align-items: stretch; }
+  .plan-side { flex-direction: column-reverse; }
+  .fp-name { font-size: 34px; }
+  .fp-note { font-size: 13px; }
+  .fp-count { font-size: 38px; }
+}
+
+/* ── the spread: staggered, never a row of equal boxes ───────── */
+.pc-grid {
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: clamp(20px, 2.6vw, 40px);
+}
+/* five sizes and five drops, cycled by position — adding a piece just
+   extends the rhythm, so the owner never has to think about layout */
+.pc-s0 .framed { aspect-ratio: 4 / 5.1; }
+.pc-s1 .framed { aspect-ratio: 4 / 3.5; }
+.pc-s2 .framed { aspect-ratio: 4 / 4.4; }
+.pc-s3 .framed { aspect-ratio: 4 / 3.1; }
+.pc-s4 .framed { aspect-ratio: 4 / 4.8; }
+.pc-s1 { margin-top: 52px; }
+.pc-s2 { margin-top: 18px; }
+.pc-s3 { margin-top: 74px; }
+.pc-s4 { margin-top: 30px; }
+
+/* hovering a room on the plan lifts that room's pieces out of the page */
+.pc-grid.peeking .pc { opacity: 0.42; transition: opacity 0.3s var(--easing); }
+.pc-grid.peeking .pc.lit { opacity: 1; }
+
+@media (max-width: 900px) {
+  .pc-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .pc-s1, .pc-s2, .pc-s3, .pc-s4 { margin-top: 0; }
+  .pc-s1 { margin-top: 26px; }
+  .pc-s3 { margin-top: 26px; }
 }
