@@ -87,8 +87,8 @@ export default function Finder() {
   return (
     <div className="finder" id="finder">
       <div className="finder-head">
-        <p className="eyebrow">Design Finder — 30 seconds</p>
-        <h3>Not sure where to start? Answer three questions.</h3>
+        <p className="eyebrow">Design Finder</p>
+        <h3>Three questions, three pieces.</h3>
         <ol className="finder-steps" aria-label="Progress">
           {STEPS.map((s, i) => (
             <li key={s} className={i === step ? 'on' : i < step ? 'done' : ''}>
@@ -123,7 +123,6 @@ export default function Finder() {
                 </button>
               ))}
             </div>
-            <p className="finder-note">Pick one and watch the whole site change with you.</p>
           </div>
         )}
 

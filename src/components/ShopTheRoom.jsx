@@ -92,10 +92,6 @@ export default function ShopTheRoom() {
             {room.title}
           </h2>
           <p className="lede">{room.note}</p>
-          <p className="str-hint">
-            <span className="str-dot-demo" aria-hidden="true" />
-            Tap a gold dot to open that piece — or jump straight to its shelf in the collection.
-          </p>
         </div>
 
         <div className="str-stage rv-img" ref={wrap}>

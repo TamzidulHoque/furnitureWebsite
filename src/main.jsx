@@ -14,6 +14,9 @@ import './styles/base.css';
 import './styles/sections.css';
 
 import App from './App.jsx';
+import gsap from 'gsap';
+
+if (import.meta.env.DEV) window.__gsap = gsap;   // lets scripts/ slow motion for capture
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

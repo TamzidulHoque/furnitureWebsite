@@ -38,8 +38,13 @@ export default function QuickView({ piece, onClose, onStep }) {
     window.__lenis?.stop();
     closeBtn.current?.focus();
     if (!reduced()) {
-      gsap.fromTo(veil.current, { opacity: 0 }, { opacity: 1, duration: 0.3 });
-      gsap.fromTo(card.current, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+      gsap.fromTo(veil.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+      gsap.fromTo(card.current,
+        { opacity: 0, y: 64, scale: 0.975 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.72, ease: 'power4.out' });
+      gsap.fromTo(card.current.querySelectorAll('.qv-left, .qv-right > *'),
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out', stagger: 0.045, delay: 0.12 });
     }
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
@@ -66,7 +71,7 @@ export default function QuickView({ piece, onClose, onStep }) {
   return (
     <div className="qv" role="dialog" aria-modal="true" aria-label={piece.name}>
       <div className="qv-veil" ref={veil} onClick={onClose} />
-      <div className="qv-card" ref={card}>
+      <div className="qv-card" ref={card} data-lenis-prevent>
         <button className="qv-close" ref={closeBtn} onClick={onClose} aria-label="Close quick view">×</button>
 
         <div className="qv-left">
@@ -149,9 +154,6 @@ export default function QuickView({ piece, onClose, onStep }) {
             <a className="btn btn-solid" href={waLink(message)} target="_blank" rel="noreferrer">
               Ask About This Piece
             </a>
-            <span className="config-note">
-              Opens WhatsApp with your choices filled in — no forms, no signup.
-            </span>
           </div>
         </div>
       </div>

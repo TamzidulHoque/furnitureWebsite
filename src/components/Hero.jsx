@@ -13,17 +13,18 @@ const SIZES = '(max-width: 900px) 100vw, 42vw';
 const srcset = (src) => `${src.replace('.webp', '-sm.webp')} 760w, ${src} 1400w`;
 const setImg = (el, src) => { el.srcset = srcset(src); el.src = src; };
 
-// Multi-image stage. Each world turns its own pages its own way:
-// classic — curtain part from the centre · modern — clean slide ·
-// noir — a page turned in a dark book.
-function HeroStage() {
+// Multi-image stage. Each world changes its picture its own way:
+// classic — the standing image splits and draws aside like a stage curtain ·
+// modern — a clean slide · noir — a slanted brass edge sweeps across.
+function HeroStage({ idx, setIdx }) {
   const { m } = useMode();
-  const [idx, setIdx] = useState(0);
   const baseImg = useRef(null);
   const fxLayer = useRef(null);
   const fxImg = useRef(null);
   const seam = useRef(null);
   const shade = useRef(null);
+  const curtain = useRef(null);
+  const edge = useRef(null);
   const stage = useRef(null);
   const busy = useRef(false);
   const opened = useRef(false);
@@ -61,6 +62,9 @@ function HeroStage() {
       gsap.set(fxLayer.current, { clearProps: 'all', autoAlpha: 0 });
       gsap.set(baseImg.current, { clearProps: 'transform,filter,opacity' });
       gsap.set(seam.current, { autoAlpha: 0 });
+      gsap.set(curtain.current, { autoAlpha: 0 });
+      gsap.set(curtain.current.children, { clearProps: 'transform' });
+      gsap.set(edge.current, { autoAlpha: 0 });
       setIdx(next);
       busy.current = false;
     };
@@ -70,28 +74,34 @@ function HeroStage() {
       tl.set(fxLayer.current, { autoAlpha: 1, x: '100%', clipPath: 'none', rotateY: 0 })
         .to(fxLayer.current, { x: '0%', duration: 0.85, ease: 'power3.inOut' })
         .to(baseImg.current, { x: '-16%', scale: 1.04, duration: 0.85, ease: 'power3.inOut' }, 0);
-    } else if (m.heroFx === 'book') {
-      // the current image is a page: lift it over and off the spine (left edge)
-      tl.set(fxLayer.current, { autoAlpha: 1, x: 0, clipPath: 'none', zIndex: 1 })
-        .set(baseImg.current.parentNode, { zIndex: 3, transformOrigin: 'left center' })
-        .set(stage.current, { perspective: 1400 })
-        .fromTo(shade.current, { autoAlpha: 0.65 }, { autoAlpha: 0, duration: 0.95, ease: 'power2.inOut' }, 0)
-        .to(baseImg.current.parentNode, {
-          rotateY: -112,
-          duration: 0.95,
-          ease: 'power2.inOut',
-        }, 0)
-        .to(baseImg.current, { filter: 'brightness(0.55)', duration: 0.5 }, 0.25)
-        .set(baseImg.current.parentNode, { clearProps: 'transform,zIndex' })
-        .set(baseImg.current, { filter: 'none' })
-        .set(shade.current, { autoAlpha: 0 });
+    } else if (m.heroFx === 'wipe') {
+      // a slanted brass edge crosses the frame and leaves the new picture behind
+      tl.set(fxLayer.current, {
+        autoAlpha: 1, x: 0, rotateY: 0,
+        clipPath: 'polygon(-30% 0%, -30% 0%, -60% 100%, -60% 100%)',
+      })
+        .set(edge.current, { autoAlpha: 1, xPercent: -60 })
+        .to(fxLayer.current, {
+          clipPath: 'polygon(-30% 0%, 130% 0%, 100% 100%, -60% 100%)',
+          duration: 1,
+          ease: 'power3.inOut',
+        })
+        .to(edge.current, { xPercent: 108, duration: 1, ease: 'power3.inOut' }, 0)
+        .to(baseImg.current, { scale: 1.06, duration: 1, ease: 'power2.inOut' }, 0)
+        .to(edge.current, { autoAlpha: 0, duration: 0.25 }, 0.8);
     } else {
-      // curtain: part from the centre, a gold seam flashes where it opens
-      tl.set(fxLayer.current, { autoAlpha: 1, x: 0, rotateY: 0, clipPath: 'inset(0 50% 0 50%)' })
+      // curtain: the picture on show is the curtain — it splits down the
+      // middle and both halves draw aside, uncovering the next one
+      const [left, right] = curtain.current.children;
+      setImg(left.querySelector('img'), imgs[idx]);
+      setImg(right.querySelector('img'), imgs[idx]);
+      tl.set(fxLayer.current, { autoAlpha: 1, x: 0, rotateY: 0, clipPath: 'none' })
+        .set(curtain.current, { autoAlpha: 1 })
         .set(seam.current, { autoAlpha: 1, scaleY: 0 })
-        .to(seam.current, { scaleY: 1, duration: 0.35, ease: 'power2.out' })
-        .to(fxLayer.current, { clipPath: 'inset(0 0% 0 0%)', duration: 0.9, ease: 'power3.inOut' }, 0.18)
-        .to(seam.current, { autoAlpha: 0, duration: 0.3 }, 0.75);
+        .to(seam.current, { scaleY: 1, duration: 0.3, ease: 'power2.out' })
+        .to(left, { xPercent: -100, duration: 1.05, ease: 'power3.inOut' }, 0.14)
+        .to(right, { xPercent: 100, duration: 1.05, ease: 'power3.inOut' }, 0.14)
+        .to(seam.current, { autoAlpha: 0, duration: 0.35 }, 0.5);
     }
   };
 
@@ -107,11 +117,16 @@ function HeroStage() {
   return (
     <div className="hero-stage" ref={stage}>
       <div className="hs-layer hs-base">
-        <img ref={baseImg} src={imgs[0]} srcSet={srcset(imgs[0])} sizes={SIZES} alt={m.heroCaption} fetchPriority="high" />
+        <img ref={baseImg} src={imgs[0]} srcSet={srcset(imgs[0])} sizes={SIZES} alt={m.heroCaptions[0]} fetchPriority="high" />
       </div>
       <div className="hs-layer hs-fx" ref={fxLayer} aria-hidden="true">
         <img ref={fxImg} alt="" />
       </div>
+      <div className="hs-curtain" ref={curtain} aria-hidden="true">
+        <div className="hs-half hs-half-l"><img alt="" /></div>
+        <div className="hs-half hs-half-r"><img alt="" /></div>
+      </div>
+      <span className="hs-edge" ref={edge} aria-hidden="true" />
       <span className="hs-seam" ref={seam} aria-hidden="true" />
       <div className="hs-shade" ref={shade} aria-hidden="true" />
       <div className="hs-dots" role="tablist" aria-label="Hero images">
@@ -132,6 +147,7 @@ function HeroStage() {
 
 export default function Hero() {
   const { m } = useMode();
+  const [idx, setIdx] = useState(0);
   const copyRef = useRef(null);
   const played = useRef(false);
 
@@ -166,13 +182,12 @@ export default function Hero() {
         <div className="hero-visual">
           <div className="framed">
             <div className="crop">
-              <HeroStage />
+              <HeroStage idx={idx} setIdx={setIdx} />
             </div>
           </div>
-          <p className="hero-caption">{m.heroCaption}</p>
+          <p className="hero-caption">{m.heroCaptions[idx] ?? m.heroCaptions[0]}</p>
         </div>
       </div>
-      <div className="scroll-hint">Scroll</div>
     </section>
   );
 }

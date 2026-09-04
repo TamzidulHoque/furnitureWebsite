@@ -18,7 +18,12 @@ export const MODES = {
     heroFx: 'curtain',
     heroImgs: ['/img/bed-hero.webp', '/img/living-royal.webp', '/img/bed-gold.webp', '/img/dining-floral.webp'],
     introImgs: ['/img/chaise-gold.webp', '/img/bed-gold.webp'],
-    heroCaption: 'Four-poster bed · hand-finished, Agrabad workshop',
+    heroCaptions: [
+      'Four-poster bed · hand-finished, Agrabad workshop',
+      'Royal tufted sofa · carved and gilded frame',
+      'Gilded tufted bed · with matching foot bench',
+      'Gold leaf dining table · turned legs, carved apron',
+    ],
     heroSub:
       'Hand-carved frames, gilded edges, upholstery cut to order — heirloom pieces from our Agrabad atelier.',
   },
@@ -34,7 +39,12 @@ export const MODES = {
     heroFx: 'slide',
     heroImgs: ['/img/office-desk.webp', '/img/bed-white.webp', '/img/office-lounge.webp', '/img/office-conf.webp'],
     introImgs: ['/img/office-lounge.webp', '/img/bed-white.webp'],
-    heroCaption: 'Executive workspace · built to measure',
+    heroCaptions: [
+      'Manager desks · built to the floor plan',
+      'Linen panel bed · painted hardwood',
+      'Breakout lounge · round table, moulded chairs',
+      'Conference table · one continuous top',
+    ],
     heroSub:
       'Clean lines, light woods, quiet comfort — workspaces and homes built to your space, not off a shelf.',
   },
@@ -47,10 +57,15 @@ export const MODES = {
     logo: '/img/logo-light.png',
     wipeInk: '#c9973f',
     heroImg: '/img/console-noir.webp',
-    heroFx: 'book',
+    heroFx: 'wipe',
     heroImgs: ['/img/console-noir.webp', '/img/dining-marble-oval.webp', '/img/dining-noir.webp', '/img/dining-marble-gold.webp'],
     introImgs: ['/img/dining-glass-round.webp', '/img/console-noir.webp'],
-    heroCaption: 'Lacquered console · brass detail',
+    heroCaptions: [
+      'Lacquered console · brass detail',
+      'Oval marble dining set · fluted pedestal',
+      'Marble and velvet dining · quilted chairs',
+      'Marble and gold dining table · brass inlay',
+    ],
     heroSub:
       'Dark lacquer, brass hardware, low light — statement pieces made to measure for rooms with presence.',
   },

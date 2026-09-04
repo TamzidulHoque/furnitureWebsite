@@ -40,14 +40,25 @@ export default function Collection() {
   // FLIP: record where every card is, let React re-render, then animate
   // each card from its old box to its new one.
   const flipState = useRef(null);
+  const fromH = useRef(0);
+  const prevIds = useRef(null);
   const captureFlip = () => {
     if (reduced() || !gridRef.current) return;
+    fromH.current = gridRef.current.offsetHeight;
     flipState.current = Flip.getState(gridRef.current.querySelectorAll('.pc'));
   };
 
   useLayoutEffect(() => {
-    if (firstRun.current) { firstRun.current = false; return; }
-    if (!flipState.current) return;
+    const ids = shown.map((p) => p.id).join();
+    if (firstRun.current) { firstRun.current = false; prevIds.current = ids; return; }
+    // typing that does not change the result set should not restage the grid
+    if (!flipState.current || ids === prevIds.current) { flipState.current = null; return; }
+    prevIds.current = ids;
+
+    const grid = gridRef.current;
+    const toH = grid.offsetHeight;
+    gsap.killTweensOf(grid);
+
     Flip.from(flipState.current, {
       duration: 0.62,
       ease: 'power3.inOut',
@@ -58,6 +69,16 @@ export default function Collection() {
         gsap.fromTo(els, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out', stagger: 0.03 }),
       onLeave: (els) =>
         gsap.to(els, { opacity: 0, scale: 0.9, duration: 0.32, ease: 'power2.in' }),
+    });
+
+    // absolute:true lifts every card out of flow, so without this the grid
+    // collapses to nothing mid-flight and the dark section below rides up
+    // over the animation. Hold the height and ease it to its new value.
+    gsap.fromTo(grid, { height: fromH.current }, {
+      height: toH,
+      duration: 0.7,
+      ease: 'power3.inOut',
+      onComplete: () => { grid.style.height = ''; },
     });
     flipState.current = null;
   }, [shown]);
@@ -105,8 +126,8 @@ export default function Collection() {
             </h2>
           </div>
           <p className="lede rv" data-rv-delay="0.1">
-            Everything here left our own workshop. Filter by what you actually need —
-            then change the wood, the fabric and the size until it fits your room.
+            Every piece here left our own workshop, and every one can be rebuilt in
+            your wood, your fabric, your measurements.
           </p>
         </div>
 
@@ -172,7 +193,7 @@ export default function Collection() {
 
         {shown.length === 0 && (
           <p className="pc-empty">
-            Nothing matches “{q}” yet — but almost everything we make is made to order.{' '}
+            No match for “{q}”.{' '}
             <button className="linkish" onClick={() => type('')}>Show everything</button>
             {' '}or{' '}
             <a className="linkish" target="_blank" rel="noreferrer"

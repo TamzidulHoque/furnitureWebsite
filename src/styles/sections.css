@@ -93,40 +93,11 @@
   color: var(--ground-ink-soft);
 }
 
-.scroll-hint {
-  position: absolute;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ground-ink-soft);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.scroll-hint::after {
-  content: '';
-  width: 1px;
-  height: 42px;
-  background: linear-gradient(var(--accent), transparent);
-  animation: drip 2.2s var(--easing) infinite;
-}
-@keyframes drip {
-  0% { transform: scaleY(0); transform-origin: top; }
-  45% { transform: scaleY(1); transform-origin: top; }
-  55% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-
 @media (max-width: 900px) {
   .hero { padding-top: 80px; padding-bottom: 70px; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-visual { height: 58vh; order: -1; margin-top: 8px; }
   .hero-caption { display: none; }
-  .scroll-hint { display: none; }
   .hero-sub { min-height: 0; }
 }
 
@@ -362,6 +333,7 @@
 /* product cards */
 .pc-grid {
   display: grid;
+  position: relative;   /* Flip positions cards against this box, not the page */
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: clamp(18px, 2.2vw, 32px);
 }
@@ -516,7 +488,6 @@
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 .config-cta { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
-.config-note { font-size: 12px; color: var(--ground-ink-soft); }
 
 /* ═══════════════════════ LEDGER (why heaven) ═══════════════════════ */
 .ledger { padding: clamp(80px, 10vw, 140px) 0; }
@@ -920,6 +891,27 @@ section { position: relative; }
 .room-inputs span { color: var(--ground-ink-soft); font-size: 13px; }
 .room-unit { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; }
 
+/* classic curtain: two halves of the outgoing picture, drawn aside */
+.hs-curtain { position: absolute; inset: 0; z-index: 3; opacity: 0; visibility: hidden; }
+.hs-half { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; }
+.hs-half img { position: absolute; top: 0; height: 100%; width: 200%; max-width: none; object-fit: cover; }
+.hs-half-l { left: 0; }
+.hs-half-l img { left: 0; }
+.hs-half-r { left: 50%; }
+.hs-half-r img { left: -100%; }
+
+/* noir wipe: a slanted brass edge travelling with the reveal */
+.hs-edge {
+  position: absolute;
+  top: -12%; bottom: -12%; left: 0;
+  width: 3px;
+  z-index: 4;
+  transform: rotate(9deg);
+  background: linear-gradient(transparent, var(--accent) 18%, #f4dfae 50%, var(--accent) 82%, transparent);
+  box-shadow: 0 0 22px 3px color-mix(in srgb, var(--accent) 45%, transparent);
+  opacity: 0; visibility: hidden;
+}
+
 /* book-flip page shadow */
 .hs-shade {
   position: absolute; inset: 0; z-index: 2;
@@ -936,23 +928,6 @@ section { position: relative; }
   align-items: center;
 }
 .str-copy .lede { max-width: 34ch; }
-.str-hint {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin-top: 26px;
-  font-size: 12.5px;
-  line-height: 1.6;
-  color: var(--ground-ink-soft);
-  max-width: 34ch;
-}
-.str-dot-demo {
-  flex: none;
-  width: 11px; height: 11px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 26%, transparent);
-}
 .str-stage .framed { width: 100%; }
 .str-stage .crop img {
   width: 100%; height: 100%;
@@ -1187,7 +1162,6 @@ section { position: relative; }
   outline: 1px solid var(--hairline-dark);
   outline-offset: 3px;
 }
-.finder-note { margin-top: 16px; font-size: 12px; color: var(--ground-ink-soft); }
 .finder-result { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(26px, 4vw, 60px); }
 .finder-picks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .fp { text-align: left; }
