@@ -289,13 +289,7 @@
 .col-clear { font-size: 19px; line-height: 1; color: var(--paper-ink-soft); padding: 0 2px; }
 .col-clear:hover { color: var(--accent-ink); }
 
-/* product cards */
-.pc-grid {
-  display: grid;
-  position: relative;   /* Flip positions cards against this box, not the page */
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: clamp(18px, 2.2vw, 32px);
-}
+/* pieces — each one hangs on the wall */
 .pc { position: relative; }
 .pc-hit { display: block; width: 100%; text-align: left; }
 .pc .framed { aspect-ratio: 4 / 4.5; }
@@ -366,7 +360,6 @@
 }
 .linkish:hover { color: var(--paper-ink); }
 @media (max-width: 760px) {
-  .pc-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .pc-meta h3 { font-size: 17px; }
   .pc-meta span { font-size: 11.5px; }
   .col-search { flex: 1 1 100%; min-width: 0; }
@@ -1257,31 +1250,130 @@ section { position: relative; }
   .fp-count { font-size: 38px; }
 }
 
-/* ── the spread: staggered, never a row of equal boxes ───────── */
-.pc-grid {
-  grid-template-columns: repeat(3, 1fr);
-  align-items: start;
-  gap: clamp(20px, 2.6vw, 40px);
+/* ═══════════════════════ THE SALON WALL ═══════════════════════ */
+/* Pieces are not laid out in a grid — they are hung, the way a
+   nineteenth-century salon hung paintings: brass nail, wire, uneven
+   sizes, uneven drops, a shadow thrown on the plaster behind. */
+.salon {
+  position: relative;
+  margin-top: clamp(4px, 1vw, 14px);
+  padding: clamp(34px, 4vw, 64px) clamp(16px, 2.4vw, 38px) clamp(48px, 5vw, 82px);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(78% 52% at 50% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 72%),
+    color-mix(in srgb, var(--paper-ink) 4%, var(--paper));
+  box-shadow: inset 0 0 0 1px var(--hairline-light);
 }
-/* five sizes and five drops, cycled by position — adding a piece just
-   extends the rhythm, so the owner never has to think about layout */
-.pc-s0 .framed { aspect-ratio: 4 / 5.1; }
-.pc-s1 .framed { aspect-ratio: 4 / 3.5; }
-.pc-s2 .framed { aspect-ratio: 4 / 4.4; }
-.pc-s3 .framed { aspect-ratio: 4 / 3.1; }
-.pc-s4 .framed { aspect-ratio: 4 / 4.8; }
-.pc-s1 { margin-top: 52px; }
-.pc-s2 { margin-top: 18px; }
-.pc-s3 { margin-top: 74px; }
-.pc-s4 { margin-top: 30px; }
+/* the skirting where the wall meets the floor */
+.salon::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 20px;
+  border-top: 1px solid var(--hairline-light);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--paper-ink) 7%, transparent), transparent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  pointer-events: none;
+}
 
-/* hovering a room on the plan lifts that room's pieces out of the page */
-.pc-grid.peeking .pc { opacity: 0.42; transition: opacity 0.3s var(--easing); }
-.pc-grid.peeking .pc.lit { opacity: 1; }
+.wall {
+  --g: clamp(18px, 2.3vw, 36px);
+  position: relative;   /* Flip positions pieces against this box, not the page */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--g);
+}
+/* nine widths, nine heights, nine drops, cycled by position. Rows form on
+   their own, so adding a piece just extends the hang — the owner never has
+   to make a layout decision. */
+.wall .pc { flex: 0 0 calc(var(--w) - var(--g) * 0.67); padding-top: var(--drop); }
+.pw0 { --w: 36%; --ar: 4 / 4.9; --drop: 18px; }
+.pw1 { --w: 30%; --ar: 4 / 3.5; --drop: 52px; }
+.pw2 { --w: 34%; --ar: 4 / 4.3; --drop: 30px; }
+.pw3 { --w: 27%; --ar: 4 / 4.7; --drop: 62px; }
+.pw4 { --w: 41%; --ar: 4 / 3.1; --drop: 22px; }
+.pw5 { --w: 32%; --ar: 4 / 4.4; --drop: 44px; }
+.pw6 { --w: 31%; --ar: 4 / 3.7; --drop: 26px; }
+.pw7 { --w: 25%; --ar: 4 / 5.2; --drop: 58px; }
+.pw8 { --w: 44%; --ar: 4 / 3.2; --drop: 34px; }
+.pw-in { position: relative; }
 
-@media (max-width: 900px) {
-  .pc-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .pc-s1, .pc-s2, .pc-s3, .pc-s4 { margin-top: 0; }
-  .pc-s1 { margin-top: 26px; }
-  .pc-s3 { margin-top: 26px; }
+/* nail and wire */
+.pw-wire {
+  position: absolute;
+  top: 0; left: 50%;
+  width: 1px;
+  height: var(--drop);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 72%, transparent),
+    color-mix(in srgb, var(--accent) 22%, transparent));
+  pointer-events: none;
+}
+.pw-wire::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: -3.5px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #f6e3b4, var(--accent) 62%, color-mix(in srgb, var(--accent) 45%, #000));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
+}
+
+/* the frame: a gold fillet on the picture, a second line standing off it,
+   and a real shadow on the wall that deepens as the piece comes forward */
+.wall .framed {
+  aspect-ratio: var(--ar);
+  outline: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 8px;
+  box-shadow: 0 18px 30px -16px rgba(20, 14, 6, 0.5);
+  transition: transform 0.55s var(--easing), box-shadow 0.55s var(--easing), outline-color var(--speed);
+}
+.wall .framed::before,
+.wall .framed:hover::before {
+  transform: none;
+  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+}
+.wall .pc-hit:hover .framed,
+.wall .pc-hit:focus-visible .framed {
+  transform: translateY(-9px) scale(1.014);
+  box-shadow: 0 34px 48px -18px rgba(20, 14, 6, 0.58);
+  outline-color: color-mix(in srgb, var(--accent) 62%, transparent);
+}
+.wall .pc-meta { padding: 17px 2px 0; }
+
+/* hovering a room on the plan lights that room's pieces on the wall */
+.wall.peeking .pc { opacity: 0.38; transition: opacity 0.3s var(--easing); }
+.wall.peeking .pc.lit { opacity: 1; }
+
+/* each world hangs its own wall */
+:root[data-mode='modern'] .salon {
+  background: color-mix(in srgb, var(--paper-ink) 2.5%, var(--paper));
+}
+:root[data-mode='modern'] .wall .framed {
+  outline-offset: 10px;
+  box-shadow: 0 14px 26px -18px rgba(0, 0, 0, 0.42);
+}
+:root[data-mode='noir'] .salon {
+  background:
+    radial-gradient(70% 50% at 50% -6%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+    color-mix(in srgb, #000 26%, var(--paper));
+}
+:root[data-mode='noir'] .wall .framed {
+  outline-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  box-shadow: 0 26px 44px -14px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 820px) {
+  .salon { padding: 26px 12px 34px; }
+  .wall { --g: 14px; }
+  .wall .pc { flex: 0 0 calc(50% - 7px); }
+  .pw0, .pw2, .pw4, .pw6, .pw8 { --drop: 14px; }
+  .pw1, .pw3, .pw5, .pw7 { --drop: 34px; }
+  .pw3, .pw7 { --ar: 4 / 4.8; }
+  .pw4, .pw8 { --ar: 4 / 3.5; }
+  .wall .framed { outline-offset: 5px; }
+  .wall .pc-meta h3 { font-size: 17px; }
+  .wall .pc-meta span { font-size: 11.5px; }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Ornament from './Ornament.jsx';
 import QuickView from './QuickView.jsx';
 import FloorPlan, { PLAN_ROOMS } from './FloorPlan.jsx';
@@ -9,7 +10,7 @@ import { waLink } from '../site.config.js';
 import { srcset } from '../lib/img.js';
 import { CATALOG } from '../data/catalog.js';
 
-gsap.registerPlugin(Flip);
+gsap.registerPlugin(Flip, ScrollTrigger);
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -111,6 +112,34 @@ export default function Collection() {
     return () => window.removeEventListener('hfm:filter', on);
   }, [room]);
 
+  // The wall drifts as it passes: three depth bands, one scroll trigger and
+  // three setters for the whole wall — a trigger per piece would cost more
+  // than the effect is worth.
+  useEffect(() => {
+    if (reduced() || !gridRef.current) return;
+    const wall = gridRef.current;
+    const bands = [0, 1, 2]
+      .map((b, i) => {
+        const els = wall.querySelectorAll(`.pw-d${b} .pw-in`);
+        return els.length ? { set: gsap.quickSetter(els, 'y', 'px'), k: [-26, 0, 17][i] } : null;
+      })
+      .filter(Boolean);
+    if (!bands.length) return;
+    const st = ScrollTrigger.create({
+      trigger: wall,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => {
+        const p = self.progress - 0.5;
+        bands.forEach((b) => b.set(p * b.k));
+      },
+    });
+    return () => {
+      st.kill();
+      gsap.set(wall.querySelectorAll('.pw-in'), { y: 0 });
+    };
+  }, [shown]);
+
   const openIdx = openId ? shown.findIndex((p) => p.id === openId) : -1;
   const step = (d) => {
     if (openIdx < 0) return;
@@ -165,50 +194,55 @@ export default function Collection() {
           </div>
         </div>
 
-        <div className={`pc-grid${peek ? ' peeking' : ''}`} ref={gridRef}>
-          {shown.map((p, i) => (
-            <article
-              className={`pc pc-s${i % 5}${peek && p.room === peek ? ' lit' : ''}`}
-              key={p.id}
-              data-flip-id={p.id}
-            >
-              {/* no aria-label: the card's own text (name, blurb, "Quick View")
-                  is the accessible name, so speech and sight agree */}
-              <button className="pc-hit" onClick={() => setOpenId(p.id)}>
-                <div className="framed">
-                  <div className="crop">
-                    <img
-                      src={p.img}
-                      srcSet={srcset(p.img)}
-                      sizes="(max-width: 700px) 46vw, 30vw"
-                      alt={p.name}
-                      loading="lazy"
-                      style={p.pos ? { objectPosition: p.pos } : undefined}
-                    />
-                    <span className="pc-view">Quick View</span>
-                  </div>
+        <div className="salon">
+          <div className={`wall${peek ? ' peeking' : ''}`} ref={gridRef}>
+            {shown.map((p, i) => (
+              <article
+                className={`pc pw${i % 9} pw-d${i % 3}${peek && p.room === peek ? ' lit' : ''}`}
+                key={p.id}
+                data-flip-id={p.id}
+              >
+                <span className="pw-wire" aria-hidden="true" />
+                <div className="pw-in">
+                  {/* no aria-label: the card's own text (name, blurb, "Quick View")
+                      is the accessible name, so speech and sight agree */}
+                  <button className="pc-hit" onClick={() => setOpenId(p.id)}>
+                    <div className="framed">
+                      <div className="crop">
+                        <img
+                          src={p.img}
+                          srcSet={srcset(p.img)}
+                          sizes="(max-width: 700px) 46vw, 34vw"
+                          alt={p.name}
+                          loading="lazy"
+                          style={p.pos ? { objectPosition: p.pos } : undefined}
+                        />
+                        <span className="pc-view">Quick View</span>
+                      </div>
+                    </div>
+                    <div className="pc-meta">
+                      <h3>{p.name}</h3>
+                      <span>{p.blurb}</span>
+                    </div>
+                  </button>
+                  {p.hot && <span className="pc-badge">Most asked for</span>}
                 </div>
-                <div className="pc-meta">
-                  <h3>{p.name}</h3>
-                  <span>{p.blurb}</span>
-                </div>
-              </button>
-              {p.hot && <span className="pc-badge">Most asked for</span>}
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
 
-        {shown.length === 0 && (
-          <p className="pc-empty">
-            No match for “{q}”.{' '}
-            <button className="linkish" onClick={() => type('')}>Show everything</button>
-            {' '}or{' '}
-            <a className="linkish" target="_blank" rel="noreferrer"
-               href={waLink(`Hello Heaven Furniture Mart! I am looking for "${q}" — do you make it?`)}>
-              ask us for it
-            </a>.
-          </p>
-        )}
+          {shown.length === 0 && (
+            <p className="pc-empty">
+              No match for “{q}”.{' '}
+              <button className="linkish" onClick={() => type('')}>Show everything</button>
+              {' '}or{' '}
+              <a className="linkish" target="_blank" rel="noreferrer"
+                 href={waLink(`Hello Heaven Furniture Mart! I am looking for "${q}" — do you make it?`)}>
+                ask us for it
+              </a>.
+            </p>
+          )}
+        </div>
       </div>
 
       {openIdx >= 0 && (
