@@ -41,6 +41,8 @@ export const IMG_SIZES = {
   "sofa-cream": { w: 1024, h: 1024, sm: 512 },
   "sofa-divan": { w: 640, h: 640, sm: 320 },
   "sofa-grey-velvet": { w: 1024, h: 1024, sm: 512 },
+  "swatch-casters": { w: 1000, h: 600, sm: 500 },
+  "swatch-damask": { w: 497, h: 402, sm: 249 },
   "wardrobe-fluted": { w: 640, h: 500, sm: 320 },
   "wardrobe-light": { w: 640, h: 590, sm: 320 },
   "wardrobe-mirror": { w: 640, h: 640, sm: 320 }

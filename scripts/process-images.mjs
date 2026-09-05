@@ -59,6 +59,11 @@ const MANIFEST = [
   { src: `${A}/497458359_1289388343192662_3550378067329039407_n.jpg`, out: 'dining-glass-round', sat: 0.95 },
   { src: `${A}/637060112_1545124897619004_4741334533607390088_n.jpg`, out: 'chaise-gold', sat: 0.95 },
   { src: `${A}/651049436_1565230802275080_8697599286154393697_n.jpg`, out: 'dining-marble-oval', sat: 0.95 },
+  // ---------- material swatches: the object pinned into Bespoke's corner ----------
+  // Noir has no entry here: its belt is drawn in Bespoke.jsx. The photograph of
+  // one sits on a white studio ground and looked pasted on against that page.
+  { src: `${A}/images.jpg`,                                                             out: 'swatch-damask',  sat: 0.95 },
+  { src: `${A}/Office-Chair-Caster-Wheels-Fit-Each-Other_f20905cc-1d84-45e5-bdab-38af5a844deb.webp`, out: 'swatch-casters' },
   // ---------- REAL photography (clean, portrait) ----------
   { src: `${A}/494195147_1273440371454126_9553634298751690_n.jpg`, out: 'bed-hero', sat: 0.96 },
   { src: `${A}/498158806_1291260873005409_1550412438002136855_n.jpg`, out: 'showroom-real', sat: 0.95 },

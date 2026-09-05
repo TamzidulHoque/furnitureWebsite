@@ -368,7 +368,128 @@
 
 /* ═══════════════════════ BESPOKE ═══════════════════════ */
 .bespoke { padding: clamp(90px, 11vw, 150px) 0; position: relative; overflow: hidden; }
+.bespoke .container { position: relative; z-index: 1; }
 .bespoke-head { max-width: 720px; margin-bottom: clamp(46px, 6vw, 80px); }
+
+/* ── the material swatch in the corner ─────────────────────────
+   The heading is capped at 720px, so the top right of this section is empty
+   page. A sample of what the world is actually made of goes there — damask,
+   castors, leather — pinned like a swatch card and carried in and out again
+   as the section goes past. Behind the words, never over them. */
+.bsp-swatch {
+  position: absolute;
+  top: clamp(48px, 7vw, 96px);
+  /* it runs off the edge; the page is not a gallery wall */
+  --sw-bleed: clamp(-52px, -2.8vw, -18px);
+  right: var(--sw-bleed);
+  z-index: 0;
+  width: clamp(150px, 21vw, 280px);
+  margin: 0;
+  padding: 10px 10px 0;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.65);
+  opacity: 0.92;
+  pointer-events: none;
+}
+.bsp-swatch img {
+  width: 100%;
+  aspect-ratio: var(--sw-ar, 4 / 3);
+  object-fit: cover;
+  display: block;
+  border-radius: calc(var(--radius) - 2px);
+}
+.bsp-swatch figcaption {
+  /* the card bleeds past the edge, the words must not go with it */
+  padding: 9px calc(2px - var(--sw-bleed)) 10px 2px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--paper-ink);
+  opacity: 0.72;
+}
+:root[data-mode='modern'] .bsp-swatch { --sw-ar: 5 / 3; }
+:root[data-mode='classic'] .bsp-swatch { --sw-ar: 4 / 3.4; }
+
+/* ── the drawn object ──────────────────────────────────────────
+   Noir's belt is drawn, not photographed, so it needs no paper under it and
+   no frame around it: it hangs in the corner the way the ornaments do. */
+.bsp-swatch-drawn {
+  width: clamp(200px, 27vw, 340px);
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  opacity: 1;
+}
+.bsp-belt {
+  width: 100%; height: auto; display: block; overflow: visible;
+  transform: scaleX(-1);      /* buckle inboard, tip over the edge */
+}
+.belt-strap {
+  fill: #3a2317;
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 1.5;
+}
+.belt-stitch {
+  stroke: color-mix(in srgb, var(--accent) 60%, transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 6;
+  stroke-linecap: round;
+}
+.belt-hole { fill: #17100b; stroke: color-mix(in srgb, var(--accent) 40%, transparent); stroke-width: 1; }
+.belt-brass {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.belt-prong {
+  stroke: var(--accent);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+}
+.belt-pin { fill: var(--accent); }
+.bsp-swatch-drawn figcaption {
+  color: var(--ground-ink-soft);
+  opacity: 0.85;
+  padding-top: 14px;
+}
+
+/* a phone has no empty corner to spare */
+@media (max-width: 900px) { .bsp-swatch { display: none; } }
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
+    .bsp-swatch {
+      animation-name: bsp-swatch-pass;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --sec-view;
+      animation-range: cover 10% cover 90%;
+    }
+    /* each world arrives in its own dialect, the way its ornament does */
+    :root[data-mode='classic'] .bsp-swatch { --sw-in: 34%; --sw-lift: -26px; --sw-tilt: -4deg; }
+    :root[data-mode='modern'] .bsp-swatch { --sw-in: 62%; --sw-lift: 0px; --sw-tilt: 0deg; }
+    :root[data-mode='noir'] .bsp-swatch { --sw-in: 78%; --sw-lift: 14px; --sw-tilt: 5deg; }
+  }
+}
+
+@keyframes bsp-swatch-pass {
+  0% {
+    opacity: 0;
+    transform: translate(var(--sw-in, 60%), var(--sw-lift, 0px)) rotate(var(--sw-tilt, 0deg));
+  }
+  26% { opacity: 0.92; transform: translate(0, 0) rotate(0deg); }
+  70% { opacity: 0.92; transform: translate(0, 0) rotate(0deg); }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sw-in, 60%), calc(var(--sw-lift, 0px) * -1)) rotate(var(--sw-tilt, 0deg));
+  }
+}
 .bespoke-head h2 em { font-style: italic; color: var(--accent); }
 .steps {
   display: grid;
@@ -795,6 +916,13 @@ blockquote.big-quote {
 /* every section is its own scroll subject; a descendant resolves to the
    nearest one above it, so one name serves the whole page */
 section { view-timeline-name: --sec-view; }
+
+/* Decoration sits in the corners on purpose, some of it hanging past the edge,
+   and the ornaments now travel further out again as they leave. None of that
+   may turn into a sideways scrollbar. `clip` rather than `hidden`: it cuts the
+   overhang without making the section a scroll container, so sticky and the
+   view timelines above keep working. */
+section { overflow-x: clip; }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {

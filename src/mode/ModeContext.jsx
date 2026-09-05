@@ -18,6 +18,9 @@ export const MODES = {
     heroFx: 'curtain',
     heroImgs: ['/img/bed-hero.webp', '/img/sofa-cream.webp', '/img/sofa-grey-velvet.webp', '/img/cabinet-gold.webp'],
     introImgs: ['/img/chaise-gold.webp', '/img/bed-gold.webp'],
+    // the material this world is made of, pinned into the corner of Bespoke
+    swatchImg: '/img/swatch-damask.webp',
+    swatchAlt: 'Damask weave · behind every gilded room',
     heroCaptions: [
       'Four-poster bed · hand-finished, Agrabad workshop',
       'Cream chesterfield set · ivory buttoning, matching centre table',
@@ -39,6 +42,9 @@ export const MODES = {
     heroFx: 'slide',
     heroImgs: ['/img/office-desk.webp', '/img/bed-white.webp', '/img/office-lounge.webp', '/img/office-conf.webp'],
     introImgs: ['/img/office-lounge.webp', '/img/bed-white.webp'],
+    // the material this world is made of, pinned into the corner of Bespoke
+    swatchImg: '/img/swatch-casters.webp',
+    swatchAlt: 'Twin-wheel castors · what a chair rolls on',
     heroCaptions: [
       'Manager desks · built to the floor plan',
       'Linen panel bed · painted hardwood',
@@ -60,6 +66,9 @@ export const MODES = {
     heroFx: 'wipe',
     heroImgs: ['/img/console-noir.webp', '/img/dining-noir.webp', '/img/dresser-carved.webp', '/img/dining-glass-round.webp'],
     introImgs: ['/img/dining-glass-round.webp', '/img/console-noir.webp'],
+    // the material this world is made of, pinned into the corner of Bespoke
+    swatchDraw: 'belt',
+    swatchAlt: 'Full-grain leather · cut for seats and trim',
     heroCaptions: [
       'Lacquered console · brass detail',
       'Marble and velvet dining · quilted chairs',
