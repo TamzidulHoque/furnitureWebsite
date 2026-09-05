@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onFirstView } from '../hooks/useMotion.js';
 import QuickView from './QuickView.jsx';
 import Ornament from './Ornament.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
+import { srcset } from '../lib/img.js';
 import { byId } from '../data/catalog.js';
 
-gsap.registerPlugin(ScrollTrigger);
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // A finished room per world. Every dot is a real piece (id) or a real
@@ -59,15 +59,14 @@ export default function ShopTheRoom() {
   // dots arrive after the photo has settled
   useEffect(() => {
     if (reduced() || !wrap.current) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.str-dot',
-        { scale: 0, autoAlpha: 0 },
-        {
-          scale: 1, autoAlpha: 1, duration: 0.5, ease: 'back.out(2)', stagger: 0.11,
-          scrollTrigger: { trigger: wrap.current, start: 'top 70%' },
-        });
-    }, wrap);
-    return () => ctx.revert();
+    let ctx;
+    const stop = onFirstView(wrap.current, () => {
+      ctx = gsap.context(() => {
+        gsap.fromTo('.str-dot', { scale: 0, autoAlpha: 0 },
+          { scale: 1, autoAlpha: 1, duration: 0.5, ease: 'back.out(2)', stagger: 0.11 });
+      }, wrap);
+    }, '0px 0px -25% 0px');
+    return () => { stop(); ctx?.revert(); };
   }, [m.key]);
 
   const openRoom = (room) => {
@@ -97,7 +96,7 @@ export default function ShopTheRoom() {
         <div className="str-stage rv-img" ref={wrap}>
           <div className="framed">
             <div className="crop" style={{ aspectRatio: room.ratio }}>
-              <img src={room.img} alt={room.title} loading="lazy" />
+              <img src={room.img} srcSet={srcset(room.img)} sizes="(max-width: 900px) 100vw, 58vw" alt={room.title} decoding="async" />
               {room.spots.map((s) => {
                 const piece = s.id ? byId(s.id) : null;
                 const label = s.label ?? piece?.name;

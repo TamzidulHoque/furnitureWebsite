@@ -57,6 +57,37 @@ Vite · React · GSAP (ScrollTrigger + Flip) · Lenis · self-hosted fonts
 showroom walkthrough (click-to-play, zero preload) and a film strip of live
 inventory shots anchor the trust story.
 
+## The three worlds are three different shops
+
+A world only ever shows its own furniture. Classic is carved, gilded and
+royal; Modern is plain and straight; Noir is dark *and* dramatic — lacquer,
+brass, leather, marble, glass, low light. Nothing is ever moved into a world
+to fill a gap: a room a world does not build says so, and offers the world
+that does.
+
+| | pieces | bedroom | living | dining | office |
+| --- | --- | --- | --- | --- | --- |
+| Classic | 16 | 4 | 10 | 2 | — |
+| Modern | 9 | 3 | — | — | 6 |
+| Noir | 8 | 1 | 1 | 4 | 2 |
+
+## Tests
+
+```bash
+npm test              # everything: 77 data checks + 27 browser journeys
+npm run test:data     # the catalogue, its rules and its photo files
+npm run test:e2e      # builds, then drives the real site
+```
+
+The data tests read `src/data/catalog.js` directly: every field, every photo
+file (in both sizes), the world rules above, and whether an upholstered piece
+actually offers a fabric. The browser tests start their own preview server and
+walk every route in all three worlds — arriving, switching world, filtering by
+room, searching, Quick View with its keyboard, the Design Finder, a room
+hotspot, the film, a phone, and a visitor who asked for less motion — asserting
+no console errors, no failed requests, no sideways scrolling and no broken
+pictures throughout.
+
 ## Commands
 
 ```bash

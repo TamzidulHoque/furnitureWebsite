@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { waLink } from '../site.config.js';
+import { srcset } from '../lib/img.js';
 import { CATEGORIES, FABRICS, WOODS } from '../data/catalog.js';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,7 +85,7 @@ export default function QuickView({ piece, onClose, onStep }) {
         <div className="qv-left">
           <div className="framed">
             <div className="crop">
-              <img className="qv-photo" src={piece.img} alt={piece.name} />
+              <img className="qv-photo" src={piece.img} srcSet={srcset(piece.img)} sizes="(max-width: 820px) 92vw, 48vw" alt={piece.name} decoding="async" />
             </div>
           </div>
         </div>

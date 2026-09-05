@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onFirstView } from '../hooks/useMotion.js';
 import { useMode } from '../mode/ModeContext.jsx';
 
-gsap.registerPlugin(ScrollTrigger);
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Scroll-borne decoration, one dialect per world:
@@ -94,31 +93,30 @@ export default function Ornament({ variant = 'a', pos = 'tr' }) {
     if (!el || !section) return;
 
     const fromSide = pos.includes('l') ? -1 : 1;
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: section, start: 'top 80%', end: 'bottom 22%', scrub: 1 },
-      });
-      if (mode === 'classic') {
-        const paths = el.querySelectorAll('path, circle, rect');
-        gsap.set(paths, { strokeDasharray: (i, t) => t.getAttribute('strokeDasharray') || '1 1', strokeDashoffset: 1 });
-        tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 0.55, duration: 0.12 })
-          .to(paths, { strokeDashoffset: 0, duration: 0.34, stagger: 0.04, ease: 'none' }, 0.05)
-          .to({}, { duration: 0.3 })
-          .to(el, { autoAlpha: 0, y: -26, duration: 0.24 });
-      } else if (mode === 'modern') {
-        tl.fromTo(el, { autoAlpha: 0, x: 70 * fromSide, y: 24 }, { autoAlpha: 0.42, x: 0, y: 0, duration: 0.32, ease: 'none' })
-          .to({}, { duration: 0.36 })
-          .to(el, { autoAlpha: 0, x: -46 * fromSide, duration: 0.28, ease: 'none' });
-      } else {
-        const stitch = el.querySelectorAll('.stitch');
-        gsap.set(stitch, { strokeDashoffset: 1 });
-        tl.fromTo(el, { autoAlpha: 0, x: 90 * fromSide }, { autoAlpha: 0.85, x: 0, duration: 0.3, ease: 'none' })
-          .to(stitch, { strokeDashoffset: 0, duration: 0.3, ease: 'none' }, 0.16)
-          .to({}, { duration: 0.26 })
-          .to(el, { autoAlpha: 0, x: 60 * fromSide, duration: 0.26, ease: 'none' });
-      }
-    }, el);
-    return () => ctx.revert();
+    let ctx;
+    // Drawn once, when the section first arrives. It used to be scrubbed to
+    // the scrollbar, which meant GSAP measuring and re-drawing five ornaments
+    // on every scrolled frame for a piece of decoration.
+    const stop = onFirstView(section, () => {
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline();
+        if (mode === 'classic') {
+          const paths = el.querySelectorAll('path, circle, rect');
+          gsap.set(paths, { strokeDasharray: (i, t) => t.getAttribute('strokeDasharray') || '1 1', strokeDashoffset: 1 });
+          tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 0.55, duration: 0.5 })
+            .to(paths, { strokeDashoffset: 0, duration: 1.1, stagger: 0.06, ease: 'power2.out' }, 0.1);
+        } else if (mode === 'modern') {
+          tl.fromTo(el, { autoAlpha: 0, x: 70 * fromSide, y: 24 },
+            { autoAlpha: 0.42, x: 0, y: 0, duration: 1.1, ease: 'power3.out' });
+        } else {
+          const stitch = el.querySelectorAll('.stitch');
+          gsap.set(stitch, { strokeDashoffset: 1 });
+          tl.fromTo(el, { autoAlpha: 0, x: 90 * fromSide }, { autoAlpha: 0.85, x: 0, duration: 1, ease: 'power3.out' })
+            .to(stitch, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out' }, 0.2);
+        }
+      }, el);
+    }, '0px 0px -20% 0px');
+    return () => { stop(); ctx?.revert(); };
   }, [mode, pos, variant]);
 
   return (

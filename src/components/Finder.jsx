@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 import QuickView from './QuickView.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
@@ -37,7 +35,6 @@ export default function Finder() {
   const [roomW, setRoomW] = useState('');
   const [openId, setOpenId] = useState(null);
   const stageRef = useRef(null);
-  const cardRef = useRef(null);
   const ownMode = useRef(null);        // the world this finder set itself
 
   const advance = (to) => {
@@ -69,23 +66,6 @@ export default function Finder() {
     setRoomW('');
     setStep(0);
   }, [m.key]);
-
-  // The card draws itself in as it arrives: the frame opens from its own
-  // centre line, then the question and the choices come up behind it.
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el || reduced()) return;
-    const ctx = gsap.context(() => {
-      gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 82%', once: true } })
-        .fromTo(el, { clipPath: 'inset(46% 0% 46% 0%)', opacity: 0.4 },
-          { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 0.85, ease: 'power3.inOut' })
-        .fromTo('.finder-head > *', { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, 0.42)
-        .fromTo('.finder-stage .opt', { opacity: 0, y: 26 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.055, ease: 'power2.out' }, 0.58);
-    }, el);
-    return () => ctx.revert();
-  }, []);
 
   // best three: the chosen room in the chosen world first, then the same
   // room in any world, then anything from that world.
@@ -124,7 +104,7 @@ export default function Finder() {
   const openIdx = openId ? picks.findIndex((p) => p.id === openId) : -1;
 
   return (
-    <div className="finder" id="finder" ref={cardRef}>
+    <div className="finder rv" id="finder">
       <div className="finder-head">
         <p className="eyebrow">Design Finder</p>
         <h3>Three questions, three pieces.</h3>
@@ -204,7 +184,7 @@ export default function Finder() {
               {picks.map((p) => (
                 <button className="fp" key={p.id} onClick={() => setOpenId(p.id)}>
                   <div className="framed"><div className="crop">
-                    <img src={p.img} srcSet={srcset(p.img)} sizes="(max-width: 900px) 30vw, 18vw" alt={p.name} loading="lazy" />
+                    <img src={p.img} srcSet={srcset(p.img)} sizes="(max-width: 900px) 30vw, 18vw" alt={p.name} loading="lazy" decoding="async" />
                   </div></div>
                   <b>{p.name}</b>
                   <span>{p.blurb}</span>

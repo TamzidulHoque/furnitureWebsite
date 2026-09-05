@@ -1,17 +1,17 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Ornament from './Ornament.jsx';
 import ModeSwitch from './ModeSwitch.jsx';
 import QuickView from './QuickView.jsx';
-import FloorPlan, { PLAN_ROOMS } from './FloorPlan.jsx';
+import FloorPlan from './FloorPlan.jsx';
+import { PLAN_ROOMS } from '../data/rooms.js';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
 import { srcset } from '../lib/img.js';
 import { CATALOG } from '../data/catalog.js';
 
-gsap.registerPlugin(Flip, ScrollTrigger);
+gsap.registerPlugin(Flip);
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -167,34 +167,6 @@ export default function Collection() {
     return () => window.removeEventListener('hfm:filter', on);
   }, [room]);
 
-  // The wall drifts as it passes: three depth bands, one scroll trigger and
-  // three setters for the whole wall — a trigger per piece would cost more
-  // than the effect is worth.
-  useEffect(() => {
-    if (reduced() || !gridRef.current) return;
-    const wall = gridRef.current;
-    const bands = [0, 1, 2]
-      .map((b, i) => {
-        const els = wall.querySelectorAll(`.pw-d${b} .pw-in`);
-        return els.length ? { set: gsap.quickSetter(els, 'y', 'px'), k: [-26, 0, 17][i] } : null;
-      })
-      .filter(Boolean);
-    if (!bands.length) return;
-    const st = ScrollTrigger.create({
-      trigger: wall,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: (self) => {
-        const p = self.progress - 0.5;
-        bands.forEach((b) => b.set(p * b.k));
-      },
-    });
-    return () => {
-      st.kill();
-      gsap.set(wall.querySelectorAll('.pw-in'), { y: 0 });
-    };
-  }, [shown]);
-
   const openIdx = openId ? shown.findIndex((p) => p.id === openId) : -1;
   const step = (d) => {
     if (openIdx < 0) return;
@@ -258,7 +230,7 @@ export default function Collection() {
             {shown.map((p, i) => (
               <article
                 // a photo rescued from a small original hangs in a small frame
-                className={`pc ${p.soft ? 'pw-soft' : `pw${i % 9}`} pw-d${i % 3}${peek && p.room === peek ? ' lit' : ''}`}
+                className={`pc ${p.soft ? 'pw-soft' : `pw${i % 9}`}${peek && p.room === peek ? ' lit' : ''}`}
                 key={p.id}
                 data-flip-id={p.id}
               >
@@ -274,7 +246,9 @@ export default function Collection() {
                           srcSet={srcset(p.img)}
                           sizes="(max-width: 1000px) 47vw, 34vw"
                           alt={p.name}
-                          loading="lazy"
+                          loading={i < 6 ? undefined : 'lazy'}
+                          fetchPriority="low"
+                          decoding="async"
                           style={p.pos ? { objectPosition: p.pos } : undefined}
                         />
                         <span className="pc-view">Quick View</span>

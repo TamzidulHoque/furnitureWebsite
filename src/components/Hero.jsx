@@ -105,6 +105,17 @@ function HeroStage({ idx, setIdx }) {
     }
   };
 
+  // the next slide is fetched while the current one is on screen, so a
+  // transition never starts by waiting for bytes
+  useEffect(() => {
+    const next = imgs[(idx + 1) % imgs.length];
+    if (!next) return;
+    const pre = new Image();
+    pre.decoding = 'async';
+    pre.srcset = srcset(next);
+    pre.src = next;
+  }, [idx, imgs]);
+
   // auto-advance
   useEffect(() => {
     if (imgs.length < 2) return;

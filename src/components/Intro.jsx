@@ -1,36 +1,12 @@
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SITE } from '../site.config.js';
 import { srcset } from '../lib/img.js';
 import { useMode } from '../mode/ModeContext.jsx';
 
-gsap.registerPlugin(ScrollTrigger);
-const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
 export default function Intro() {
   const { m } = useMode();
-  const sec = useRef(null);
-  const mark = useRef(null);
-  const photoA = useRef(null);
-  const photoB = useRef(null);
-
-  // scroll-scrubbed life: the watermark drifts, the photos ride at
-  // different speeds — a page that moves while you read it
-  useEffect(() => {
-    if (reduced()) return;
-    const ctx = gsap.context(() => {
-      const st = { trigger: sec.current, start: 'top bottom', end: 'bottom top', scrub: 1.1 };
-      gsap.fromTo(mark.current, { xPercent: 4 }, { xPercent: -10, ease: 'none', scrollTrigger: st });
-      gsap.fromTo(photoA.current, { yPercent: 14, rotate: -1.6 }, { yPercent: -14, rotate: 1.2, ease: 'none', scrollTrigger: st });
-      gsap.fromTo(photoB.current, { yPercent: 26, rotate: 2.2 }, { yPercent: -8, rotate: -1.4, ease: 'none', scrollTrigger: st });
-    }, sec);
-    return () => ctx.revert();
-  }, [m.key]);
-
   return (
-    <section className="intro sec-light" ref={sec}>
-      <span className="intro-mark" ref={mark} aria-hidden="true">HEAVEN</span>
+    <section className="intro sec-light">
+      <span className="intro-mark" aria-hidden="true">HEAVEN</span>
       <div className="container intro-grid">
         <div className="intro-left rv">
           <p className="eyebrow">The House</p>
@@ -38,11 +14,11 @@ export default function Intro() {
             Designed. Crafted. <em>Customized.</em>
           </p>
           <div className="intro-collage" aria-hidden="true">
-            <figure className="ic-photo ic-a" ref={photoA}>
-              <img src={m.introImgs[0]} srcSet={srcset(m.introImgs[0])} sizes="30vw" alt="" loading="lazy" />
+            <figure className="ic-photo ic-a">
+              <img src={m.introImgs[0]} srcSet={srcset(m.introImgs[0])} sizes="30vw" alt="" loading="lazy" decoding="async" />
             </figure>
-            <figure className="ic-photo ic-b" ref={photoB}>
-              <img src={m.introImgs[1]} srcSet={srcset(m.introImgs[1])} sizes="26vw" alt="" loading="lazy" />
+            <figure className="ic-photo ic-b">
+              <img src={m.introImgs[1]} srcSet={srcset(m.introImgs[1])} sizes="26vw" alt="" loading="lazy" decoding="async" />
             </figure>
           </div>
         </div>

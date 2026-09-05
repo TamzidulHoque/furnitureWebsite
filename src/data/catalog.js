@@ -12,7 +12,15 @@
      name     shown on the card
      cat      one of the CATEGORIES keys below (beds/sofas/chairs/…)
      img      path to the photo, always starts with /img/
-     world    classic | modern | noir — which style world it belongs to
+     world    classic | modern | noir — which style world it belongs to.
+              THE RULE: a world only ever shows its own kind of furniture.
+                classic  carved, gilded, royal, tufted, ornate
+                modern   plain, straight, light woods, office
+                noir     dark AND dramatic: lacquer, brass, leather, marble,
+                         glass, low light
+              Never move a piece into a world just to fill a gap. A room a
+              world does not build says so on the site, and offers the world
+              that does. `npm test` checks this.
      blurb    one line under the name
      spec     the material/size line inside Quick View
      tags     extra search words (the search box reads these)
@@ -82,7 +90,7 @@ export const CATALOG = [
   },
   {
     id: 'linen-panel-bed',
-    name: 'Linen Panel Bed',
+    name: 'Painted Panel Bed',
     cat: 'beds',
     room: 'bedroom',
     img: '/img/bed-white.webp',
@@ -162,7 +170,7 @@ export const CATALOG = [
     cat: 'sofas',
     room: 'living',
     img: '/img/sofa-grey-velvet.webp',
-    world: 'noir',
+    world: 'classic',
     blurb: 'Embroidered bolsters on a low carved frame.',
     spec: 'Velvet over hardwood · embroidered cushions · lounge or living room',
     tags: ['sofa', 'grey', 'velvet', 'divan', 'embroidered', 'living'],
@@ -188,7 +196,7 @@ export const CATALOG = [
     cat: 'chairs',
     room: 'living',
     img: '/img/chairs-barrel.webp',
-    world: 'modern',
+    world: 'classic',
     blurb: 'A quiet pair with a turned-leg side table.',
     spec: 'Buttoned barrel back · turned hardwood legs · side table included',
     tags: ['chair', 'armchair', 'barrel', 'tufted', 'pair', 'living', 'neutral', 'table'],
