@@ -81,21 +81,14 @@ const prefersReduced = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function ModeProvider({ children }) {
-  const [mode, setModeState] = useState(() => {
-    try {
-      const saved = localStorage.getItem('heaven-mode');
-      return MODES[saved] ? saved : 'classic';
-    } catch {
-      return 'classic';
-    }
-  });
+  // always Classic on arrival — see the note in index.html
+  const [mode, setModeState] = useState('classic');
   const wipeRef = useRef(null);
   const wipeWordRef = useRef(null);
   const busy = useRef(false);
 
   useEffect(() => {
     document.documentElement.dataset.mode = mode;
-    try { localStorage.setItem('heaven-mode', mode); } catch { /* private mode */ }
   }, [mode]);
 
   const setMode = useCallback((next) => {
