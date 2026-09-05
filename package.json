@@ -7,10 +7,12 @@
     "preview": "vite preview",
     "assets:logo": "node scripts/extract-logo.mjs",
     "assets:images": "node scripts/process-images.mjs",
+    "assets:video": "node scripts/process-video.mjs",
     "test": "node --test --test-concurrency=1 tests/catalog.test.mjs tests/e2e.test.mjs",
     "test:data": "node --test tests/catalog.test.mjs",
     "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e.test.mjs",
-    "check:hero": "npm run build && node scripts/check-hero.mjs"
+    "check:hero": "npm run build && node scripts/check-hero.mjs",
+    "preflight": "npm run build && node scripts/preflight.mjs"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.1",
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0",
     "playwright": "^1.62.1",
     "sharp": "^0.35.4",
     "vite": "^8.2.2"

@@ -13,7 +13,6 @@ export const IMG_SIZES = {
   "cabinet-gold": { w: 1024, h: 1024, sm: 512 },
   "cabinet-wood": { w: 640, h: 569, sm: 320 },
   "chair-ergo": { w: 1080, h: 1080, sm: 540 },
-  "chair-exec-black": { w: 1080, h: 1080, sm: 540 },
   "chair-exec-wood": { w: 1080, h: 1080, sm: 540 },
   "chair-fanback": { w: 640, h: 640, sm: 320 },
   "chair-lounge-blue": { w: 640, h: 640, sm: 320 },

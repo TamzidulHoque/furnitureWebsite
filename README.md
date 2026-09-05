@@ -94,12 +94,31 @@ pictures throughout.
 npm install
 npm run dev            # local dev server
 npm run build          # production build -> dist/
+npm test               # 115 checks: the catalogue, then the built site in a browser
+npm run preflight      # build, then everything that must be true before it goes live
+npm run check:hero     # press every hero rule, three worlds, desktop and phone
+
 npm run assets:logo    # re-extract logo + palette from assets/logo.jpg
-npm run assets:images  # re-run crop/grade/webp pipeline from assets/
+npm run assets:images  # re-run the grade/webp pipeline from assets/ (whole frames, no crop)
+npm run assets:video   # re-encode the showroom film (needs assets/showroom-source.mp4)
+node scripts/rescue-thumbs.mjs   # the 206px originals, scaled and sharpened
+node scripts/make-thumbs.mjs     # the "from our feed" film strip
 node scripts/probe-frames.mjs 1  # frame cost while scrolling each section
 node scripts/shoot.mjs        # screenshot all modes (needs `npx playwright install chromium`)
 node scripts/shoot-flow.mjs classic desktop   # drive filter → search → quick view → finder
 ```
+
+The camera original of the showroom film is **not in git** — it is 27MB, and
+only `assets:video` needs it. What ships is the 14MB encode in `public/video/`.
+Put `assets/showroom-source.mp4` back before re-encoding; the script refuses to
+run without it rather than re-encoding its own output.
+
+## Deploying
+
+Vercel detects Vite on its own: build `npm run build`, output `dist`, no
+`vercel.json` needed. The Open Graph tags complete themselves from the deploy
+domain (`VERCEL_PROJECT_PRODUCTION_URL`, or `SITE_URL` on any other host) — see
+`absoluteSocialUrls` in [vite.config.js](vite.config.js).
 
 ## Editing contact info
 

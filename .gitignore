@@ -3,3 +3,6 @@ dist/
 shots/
 scripts/_*.png
 heaven-furniture-mart-dist.zip
+# the camera original of the showroom film — 27MB, and only scripts/process-video.mjs
+# needs it. What ships is the encode in public/video/.
+assets/showroom-source.mp4
