@@ -42,11 +42,13 @@ export default function Bespoke() {
       gsap.fromTo('.bsp-bg img', { yPercent: -12 }, {
         yPercent: 12,
         ease: 'none',
+        force3D: true,
         scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.35 },
       });
       gsap.to('.bsp-wash', {
         yPercent: -100,
         ease: 'none',
+        force3D: true,
         scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 24%', scrub: 0.4 },
       });
       gsap.fromTo('.bsp-head-line', { scaleX: 0 }, {

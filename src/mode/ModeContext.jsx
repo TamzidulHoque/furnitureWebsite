@@ -18,7 +18,7 @@ export const MODES = {
     heroFx: 'curtain',
     heroImgs: ['/img/bed-hero.webp', '/img/living-royal.webp', '/img/bed-gold.webp', '/img/dining-floral.webp'],
     introImgs: ['/img/chaise-gold.webp', '/img/bed-gold.webp'],
-    bandImg: '/img/living-royal.webp',
+    bandImg: '/img/living-royal-band.webp',
     heroCaptions: [
       'Four-poster bed · hand-finished, Agrabad workshop',
       'Royal tufted sofa · carved and gilded frame',
@@ -40,7 +40,7 @@ export const MODES = {
     heroFx: 'slide',
     heroImgs: ['/img/office-desk.webp', '/img/bed-white.webp', '/img/office-lounge.webp', '/img/office-conf.webp'],
     introImgs: ['/img/office-lounge.webp', '/img/bed-white.webp'],
-    bandImg: '/img/office-conf.webp',
+    bandImg: '/img/office-conf-band.webp',
     heroCaptions: [
       'Manager desks · built to the floor plan',
       'Linen panel bed · painted hardwood',
@@ -62,7 +62,7 @@ export const MODES = {
     heroFx: 'wipe',
     heroImgs: ['/img/console-noir.webp', '/img/dining-marble-oval.webp', '/img/dining-noir.webp', '/img/dining-marble-gold.webp'],
     introImgs: ['/img/dining-glass-round.webp', '/img/console-noir.webp'],
-    bandImg: '/img/dining-noir.webp',
+    bandImg: '/img/dining-noir-band.webp',
     heroCaptions: [
       'Lacquered console · brass detail',
       'Oval marble dining set · fluted pedestal',

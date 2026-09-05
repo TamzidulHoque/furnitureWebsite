@@ -1436,6 +1436,7 @@ section { position: relative; }
 /* ── walking into the workshop: the light above lifts away ───── */
 .bsp-wash {
   position: absolute;
+  will-change: transform;
   top: 0;
   left: 0;
   right: 0;
@@ -1522,7 +1523,11 @@ section { position: relative; }
   height: 132%;
   object-fit: cover;
   opacity: 0.4;
-  filter: saturate(0.7);
+  /* No filter here. This image moves on every scrolled frame, and a CSS
+     filter on a moving full-bleed image forces a fresh raster each time —
+     measured at roughly half the frame rate. The photographs are
+     desaturated once, at build time, by scripts/make-band.mjs. */
+  will-change: transform;
 }
 /* the scrim that keeps ivory text at full contrast over the photograph */
 .bsp-bg::after {
@@ -1538,7 +1543,7 @@ section { position: relative; }
 }
 :root[data-mode='noir'] .bsp-bg img { opacity: 0.5; }
 /* a pale photograph on a pale ground smears; Modern takes it as texture */
-:root[data-mode='modern'] .bsp-bg img { opacity: 0.16; filter: saturate(0.5) contrast(1.05); }
+:root[data-mode='modern'] .bsp-bg img { opacity: 0.16; }
 @media (prefers-reduced-motion: reduce) {
   .bsp-bg img { top: 0; height: 100%; }
 }
