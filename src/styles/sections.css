@@ -1433,12 +1433,11 @@ section { position: relative; }
 .ms-compact .ms-name { font-size: 13px; }
 .ms-compact .ms-swatch { width: 13px; height: 13px; }
 
-.bespoke .container { position: relative; z-index: 1; }
-.bsp-head-line {
+/* the rule under the heading — drawn by CSS, standing still */
+.bsp-rule {
   display: block;
   height: 1px;
   margin-top: 26px;
-  transform-origin: left center;
   background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 10%, transparent));
 }
 
@@ -1468,50 +1467,46 @@ section { position: relative; }
    above it, so the whole area read as nothing at all — no edge, no step, and
    a wash the same colour as both. It gets the deeper ground instead, which
    gives the wash something to lift off and the section an edge again. */
-.bespoke { --bsp-ground: var(--ground); }
+/* In Modern the "dark" section is a warm greige a hair from the paper above
+   it, and the whole area read as a blank stretch of page. It takes a deeper
+   ground and a top edge of its own. */
 :root[data-mode='modern'] .bespoke {
-  --bsp-ground: color-mix(in srgb, var(--ground-deep) 90%, var(--paper-ink));
-  background: var(--bsp-ground);
+  background: color-mix(in srgb, var(--ground-deep) 90%, var(--paper-ink));
   border-top: 1px solid var(--hairline-dark);
 }
 
-/* the room behind the words, travelling slower than the page */
-.bsp-bg {
-  position: absolute;
-  inset: 0;
+
+/* ── the order slip prints itself ────────────────────────────── */
+.wm {
+  display: inline-block;
   overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
+  vertical-align: bottom;
+  padding-bottom: 0.09em;
+  margin-bottom: -0.09em;
+  margin-right: 0.24em;
 }
-.bsp-bg img {
+.wm-in { display: inline-block; }
+.ledger-row { position: relative; border-bottom: none; }
+.ledger-rule {
   position: absolute;
-  top: -16%;
   left: 0;
-  width: 100%;
-  height: 132%;
-  object-fit: cover;
-  opacity: 0.4;
-  /* No filter here. This image moves on every scrolled frame, and a CSS
-     filter on a moving full-bleed image forces a fresh raster each time —
-     measured at roughly half the frame rate. The photographs are
-     desaturated once, at build time, by scripts/make-band.mjs. */
-  will-change: transform;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--hairline-light);
+  transform-origin: left center;
 }
-/* the scrim that keeps ivory text at full contrast over the photograph */
-.bsp-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    var(--bsp-ground) 0%,
-    color-mix(in srgb, var(--bsp-ground) 78%, transparent) 30%,
-    color-mix(in srgb, var(--bsp-ground) 62%, transparent) 58%,
-    var(--bsp-ground) 100%);
+.ledger-row:last-child .ledger-rule { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* In Modern the "dark" section is a warm greige a hair away from the paper
+   above it, so the whole area read as nothing at all — no edge, no step, and
+   a wash the same colour as both. It gets the deeper ground instead, which
+   gives the wash something to lift off and the section an edge again. */
+/* In Modern the "dark" section is a warm greige a hair from the paper above
+   it, and the whole area read as a blank stretch of page. It takes a deeper
+   ground and a top edge of its own. */
+:root[data-mode='modern'] .bespoke {
+  background: color-mix(in srgb, var(--ground-deep) 90%, var(--paper-ink));
+  border-top: 1px solid var(--hairline-dark);
 }
-:root[data-mode='noir'] .bsp-bg img { opacity: 0.5; }
-/* a pale photograph on a pale ground smears; Modern takes it as texture */
-:root[data-mode='modern'] .bsp-bg img { opacity: 0.16; }
-@media (prefers-reduced-motion: reduce) {
-  .bsp-bg img { top: 0; height: 100%; }
-}
+

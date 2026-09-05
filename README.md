@@ -65,7 +65,6 @@ npm run dev            # local dev server
 npm run build          # production build -> dist/
 npm run assets:logo    # re-extract logo + palette from assets/logo.jpg
 npm run assets:images  # re-run crop/grade/webp pipeline from assets/
-node scripts/make-band.mjs     # re-bake the desaturated parallax band photos
 node scripts/probe-frames.mjs 1  # frame cost while scrolling each section
 node scripts/shoot.mjs        # screenshot all modes (needs `npx playwright install chromium`)
 node scripts/shoot-flow.mjs classic desktop   # drive filter → search → quick view → finder

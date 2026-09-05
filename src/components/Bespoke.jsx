@@ -1,10 +1,5 @@
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Ornament from './Ornament.jsx';
 import Finder from './Finder.jsx';
-import { useMode } from '../mode/ModeContext.jsx';
-import { srcset } from '../lib/img.js';
 
 const STEPS = [
   {
@@ -24,45 +19,17 @@ const STEPS = [
   },
 ];
 
-const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+// The heading here carried a wash, then a parallax photograph, then a drawn
+// rule. Each one rendered badly on the way in, so the heading now simply
+// stands there — no reveal, no layer behind it, nothing to go wrong. The
+// three steps keep the site's ordinary reveal; the Design Finder below keeps
+// its entrance, and the order slip keeps its printing.
 export default function Bespoke() {
-  const { m } = useMode();
-  const sec = useRef(null);
-
-  // Parallax only. There used to be a paper-coloured wash lifting off the top
-  // of this section; it covered the heading, which is ivory, with a layer the
-  // same colour as the heading — a screen and a half of apparent nothing on
-  // the way in. The photograph does the transition instead.
-  useEffect(() => {
-    const el = sec.current;
-    if (!el || reduced()) return;
-    const ctx = gsap.context(() => {
-      // Parallax: the room behind the words travels slower than the page, so
-      // the section reads as depth rather than as a picture stuck to a wall.
-      gsap.fromTo('.bsp-bg img', { yPercent: -12 }, {
-        yPercent: 12,
-        ease: 'none',
-        force3D: true,
-        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.35 },
-      });
-      gsap.fromTo('.bsp-head-line', { scaleX: 0 }, {
-        scaleX: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top 70%', end: 'top 20%', scrub: 0.5 },
-      });
-    }, el);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section className="bespoke sec-dark" id="bespoke" ref={sec}>
-      <div className="bsp-bg" aria-hidden="true">
-        <img src={m.bandImg} srcSet={srcset(m.bandImg)} sizes="100vw" alt="" loading="lazy" />
-      </div>
+    <section className="bespoke sec-dark" id="bespoke">
       <Ornament variant="b" pos="bl" />
       <div className="container">
-        <div className="bespoke-head rv">
+        <div className="bespoke-head">
           <p className="eyebrow">The Heaven Difference</p>
           <h2 className="display" style={{ margin: '18px 0 16px' }}>
             Not from a shelf. <em>From a conversation.</em>
@@ -70,7 +37,7 @@ export default function Bespoke() {
           <p className="lede">
             Bespoke is not an option here — it is the whole house.
           </p>
-          <span className="bsp-head-line" aria-hidden="true" />
+          <span className="bsp-rule" aria-hidden="true" />
         </div>
 
         <div className="steps">
