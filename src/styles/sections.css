@@ -1433,33 +1433,6 @@ section { position: relative; }
 .ms-compact .ms-name { font-size: 13px; }
 .ms-compact .ms-swatch { width: 13px; height: 13px; }
 
-/* ── walking into the workshop: the light above lifts away ───── */
-.bsp-wash {
-  position: absolute;
-  will-change: transform;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 78vh;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    var(--paper) 0%,
-    var(--paper) 30%,
-    color-mix(in srgb, var(--paper) 55%, transparent) 62%,
-    transparent 100%);
-}
-.bsp-wash::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent) 22%, var(--accent) 78%, transparent);
-  opacity: 0.5;
-}
 .bespoke .container { position: relative; z-index: 1; }
 .bsp-head-line {
   display: block;
@@ -1490,11 +1463,6 @@ section { position: relative; }
   transform-origin: left center;
 }
 .ledger-row:last-child .ledger-rule { background: color-mix(in srgb, var(--accent) 45%, transparent); }
-
-@media (prefers-reduced-motion: reduce) {
-  /* the wash only makes sense while it is moving */
-  .bsp-wash { display: none; }
-}
 
 /* In Modern the "dark" section is a warm greige a hair away from the paper
    above it, so the whole area read as nothing at all — no edge, no step, and

@@ -30,9 +30,10 @@ export default function Bespoke() {
   const { m } = useMode();
   const sec = useRef(null);
 
-  // The light of the collection above is still in the room when you arrive;
-  // it lifts away as you scroll in, with a gold seam riding its edge, and the
-  // section settles into its own dark. Scrubbed, so it follows the reader.
+  // Parallax only. There used to be a paper-coloured wash lifting off the top
+  // of this section; it covered the heading, which is ivory, with a layer the
+  // same colour as the heading — a screen and a half of apparent nothing on
+  // the way in. The photograph does the transition instead.
   useEffect(() => {
     const el = sec.current;
     if (!el || reduced()) return;
@@ -44,12 +45,6 @@ export default function Bespoke() {
         ease: 'none',
         force3D: true,
         scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.35 },
-      });
-      gsap.to('.bsp-wash', {
-        yPercent: -100,
-        ease: 'none',
-        force3D: true,
-        scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 24%', scrub: 0.4 },
       });
       gsap.fromTo('.bsp-head-line', { scaleX: 0 }, {
         scaleX: 1,
@@ -65,7 +60,6 @@ export default function Bespoke() {
       <div className="bsp-bg" aria-hidden="true">
         <img src={m.bandImg} srcSet={srcset(m.bandImg)} sizes="100vw" alt="" loading="lazy" />
       </div>
-      <span className="bsp-wash" aria-hidden="true" />
       <Ornament variant="b" pos="bl" />
       <div className="container">
         <div className="bespoke-head rv">
