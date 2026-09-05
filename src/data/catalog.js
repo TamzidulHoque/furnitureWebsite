@@ -139,6 +139,18 @@ export const CATALOG = [
     finish: ['wood', 'fabric'],
   },
   {
+    id: 'gilded-centre-table',
+    name: 'Gilded Centre Table',
+    cat: 'sofas',
+    room: 'living',
+    img: '/img/centre-table-gilt.webp',
+    world: 'classic',
+    blurb: 'Carved and silvered, with a bevelled glass top.',
+    spec: 'Hand-carved hardwood · gilt and silver finish · inset toughened glass',
+    tags: ['table', 'centre', 'coffee', 'carved', 'gilded', 'glass', 'living'],
+    finish: ['wood'],
+  },
+  {
     id: 'gold-chaise-settee',
     name: 'Gold Chaise Settee',
     cat: 'sofas',

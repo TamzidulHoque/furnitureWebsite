@@ -12,6 +12,7 @@ export const IMG_SIZES = {
   "cabinet-carved": { w: 640, h: 544, sm: 320 },
   "cabinet-gold": { w: 1024, h: 1024, sm: 512 },
   "cabinet-wood": { w: 640, h: 569, sm: 320 },
+  "centre-table-gilt": { w: 1536, h: 2048, sm: 768 },
   "chair-ergo": { w: 1080, h: 1080, sm: 540 },
   "chair-exec-wood": { w: 1080, h: 1080, sm: 540 },
   "chair-fanback": { w: 640, h: 640, sm: 320 },

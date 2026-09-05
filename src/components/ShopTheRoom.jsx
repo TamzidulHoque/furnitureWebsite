@@ -22,11 +22,13 @@ const ROOMS = {
     img: '/img/living-royal.webp',
     title: 'A Chattogram drawing room',
     note: 'Every piece below was built in our Agrabad workshop.',
+    // Two dots, and both open a piece. The third pointed at the sofa in this
+    // photograph, which is no longer in the catalogue, so it could only send
+    // the visitor to a filtered list — a weaker thing to do than the dots
+    // beside it, and three dots where one behaves differently is worse than
+    // two that behave the same.
     spots: [
-      // the sofa in this photograph is no longer a piece in the catalogue,
-      // so this dot opens the living room rather than a card that is not there
-      { x: 20, y: 38.7, room: 'living', label: 'Royal Tufted Sofa' },
-      { x: 41, y: 65.7, room: 'living', label: 'Gilded Centre Table' },
+      { x: 41, y: 65.7, id: 'gilded-centre-table' },
       { x: 88, y: 38.7, id: 'floral-salon-sofa', label: 'Matching Settee' },
     ],
   },

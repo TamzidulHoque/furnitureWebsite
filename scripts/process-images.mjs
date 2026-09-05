@@ -63,6 +63,7 @@ const MANIFEST = [
   // one sits on a white studio ground and looked pasted on against that page.
   { src: `${A}/images.jpg`,                                                             out: 'swatch-damask',  sat: 0.95 },
   { src: `${A}/Office-Chair-Caster-Wheels-Fit-Each-Other_f20905cc-1d84-45e5-bdab-38af5a844deb.webp`, out: 'swatch-casters' },
+  { src: `${A}/629488201_1536163895181771_4585033742860212554_n.jpg`, out: 'centre-table-gilt', sat: 0.95 },
   // ---------- REAL photography (clean, portrait) ----------
   { src: `${A}/494195147_1273440371454126_9553634298751690_n.jpg`, out: 'bed-hero', sat: 0.96 },
   { src: `${A}/498158806_1291260873005409_1550412438002136855_n.jpg`, out: 'showroom-real', sat: 0.95 },
