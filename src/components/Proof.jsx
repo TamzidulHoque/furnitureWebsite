@@ -1,5 +1,5 @@
 import Ornament from './Ornament.jsx';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SITE } from '../site.config.js';
 
 const TIMELINE = [
@@ -12,11 +12,36 @@ const TIMELINE = [
 
 export default function Proof() {
   const videoRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const play = () => {
-    setPlaying(true);
-    requestAnimationFrame(() => videoRef.current?.play());
-  };
+  const [muted, setMuted] = useState(true);
+
+  // The film is 28MB, so it is not fetched until the section is near, and it
+  // stops the moment it scrolls away — autoplay that costs nothing to anyone
+  // who never reaches it.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || typeof IntersectionObserver !== 'function') return;
+    // a visitor who asked for less motion does not get a film starting itself
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      v.controls = true;
+      v.autoplay = false;
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            if (v.preload !== 'auto') v.preload = 'auto';
+            v.play().catch(() => { /* a browser that refuses muted autoplay */ });
+          } else {
+            v.pause();
+          }
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
 
   return (
     <section className="proof sec-dark" id="visit">
@@ -42,26 +67,34 @@ export default function Proof() {
           <div className="proof-visual">
             <div className="framed rv" data-rv-delay="0.08">
               <div className="crop proof-video">
-                {playing ? (
-                  <video
-                    ref={videoRef}
-                    src="/video/showroom.mp4"
-                    poster="/video/poster.jpg"
-                    controls
-                    playsInline
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                ) : (
-                  <button className="showroom-poster" onClick={play} aria-label="Play the showroom tour video">
-                    <img src="/video/poster.jpg" alt="Inside the Heaven Furniture Mart showroom" loading="lazy" />
-                    <span className="play-ring">
-                      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
-                        <path d="M8 5v14l11-7z" fill="currentColor" />
-                      </svg>
-                    </span>
-                    <span className="play-note">Walk the showroom · 2 min</span>
-                  </button>
-                )}
+                <video
+                  ref={videoRef}
+                  src="/video/showroom.mp4"
+                  poster="/video/poster.jpg"
+                  preload="none"
+                  autoPlay
+                  loop
+                  muted={muted}
+                  playsInline
+                  aria-label="Inside the Heaven Furniture Mart showroom"
+                />
+                <button
+                  className="vid-sound"
+                  onClick={() => setMuted((v) => !v)}
+                  aria-label={muted ? 'Turn the sound on' : 'Turn the sound off'}
+                >
+                  {muted ? (
+                    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                      <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
+                      <path d="M17 8l4 8M21 8l-4 8" stroke="currentColor" strokeWidth="1.6" fill="none" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                      <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
+                      <path d="M16.5 8.8a4 4 0 010 6.4M19 6.5a7.5 7.5 0 010 11" stroke="currentColor" strokeWidth="1.6" fill="none" />
+                    </svg>
+                  )}
+                </button>
               </div>
             </div>
             <p className="proof-cap rv">

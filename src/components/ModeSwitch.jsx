@@ -1,10 +1,12 @@
 import { useMode } from '../mode/ModeContext.jsx';
 
-export default function ModeSwitch() {
+// `compact` is the row that sits with the collection: the same three
+// choices, without the question — by then it has already been asked.
+export default function ModeSwitch({ compact = false }) {
   const { mode, setMode, MODES } = useMode();
   return (
-    <div className="mode-switch" role="radiogroup" aria-label="Choose your style world">
-      <p className="ms-label">Which Heaven is yours?</p>
+    <div className={`mode-switch${compact ? ' ms-compact' : ''}`} role="radiogroup" aria-label="Choose your style world">
+      {!compact && <p className="ms-label">Which Heaven is yours?</p>}
       <div className="ms-options">
         {Object.values(MODES).map((m) => (
           <button
@@ -17,7 +19,7 @@ export default function ModeSwitch() {
             <span className="ms-swatch" style={{ background: m.swatch }} />
             <span>
               <span className="ms-name">{m.name}</span>
-              <span className="ms-desc">{m.desc}</span>
+              {!compact && <span className="ms-desc">{m.desc}</span>}
             </span>
           </button>
         ))}

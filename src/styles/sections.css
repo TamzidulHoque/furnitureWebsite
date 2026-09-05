@@ -951,22 +951,24 @@ section { position: relative; }
 .qv-veil { position: absolute; inset: 0; background: rgba(10, 12, 12, 0.76); backdrop-filter: blur(5px); }
 .qv-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(22px, 3vw, 46px);
+  display: flex;
+  flex-direction: column;
   width: min(1020px, 100%);
   max-height: calc(100dvh - 40px);
   overflow-y: auto;
-  padding: clamp(20px, 2.6vw, 40px);
   background: var(--ground);
   border: 1px solid var(--hairline-dark);
   border-radius: var(--radius);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
 }
+.qv-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(22px, 3vw, 46px);
+  padding: clamp(18px, 2.4vw, 34px) clamp(20px, 2.6vw, 40px) clamp(20px, 2.6vw, 40px);
+}
 .qv-close {
-  position: absolute;
-  top: 10px; right: 14px;
-  z-index: 4;
+  margin-left: 4px;
   width: 36px; height: 36px;
   font-size: 26px;
   line-height: 1;
@@ -978,18 +980,26 @@ section { position: relative; }
 .qv-close:hover { color: var(--accent); border-color: var(--hairline-dark); }
 .qv-left .framed { aspect-ratio: 4 / 4.4; }
 .qv-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.qv-step {
+/* the piece-to-piece controls sit in a bar that stays put while the panel
+   scrolls, so prev / next / close never need to be hunted for */
+.qv-bar {
+  position: sticky;
+  top: 0;
+  z-index: 6;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  margin-top: 14px;
+  padding: 10px clamp(14px, 2vw, 22px);
+  background: var(--ground);
+  border-bottom: 1px solid var(--hairline-dark);
+  border-radius: var(--radius) var(--radius) 0 0;
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ground-ink-soft);
 }
-.qv-step button {
+.qv-bar > span { flex: 1; text-align: center; }
+.qv-bar button {
   font: inherit;
   color: var(--ground-ink);
   padding: 6px 10px;
@@ -997,7 +1007,8 @@ section { position: relative; }
   border-radius: var(--radius);
   transition: color 0.25s, border-color 0.25s;
 }
-.qv-step button:hover { color: var(--accent); border-color: var(--accent); }
+.qv-bar button:hover { color: var(--accent); border-color: var(--accent); }
+.qv-bar .qv-close { border-color: transparent; padding: 0; font-size: 24px; letter-spacing: 0; }
 .qv-right { display: flex; flex-direction: column; }
 .qv-name {
   font-family: var(--font-display);
@@ -1018,17 +1029,19 @@ section { position: relative; }
   margin-bottom: 24px;
 }
 @media (max-width: 820px) {
-  .qv-card { grid-template-columns: 1fr; }
+  .qv-body { grid-template-columns: 1fr; }
   .qv-left .framed { aspect-ratio: 4 / 3.2; }
   .qv-card .framed::before { display: none; }
   /* the ask stays reachable however far down the panel you scroll */
-  .qv-right .config-cta {
-    position: sticky;
-    bottom: -1px;
-    margin-top: 20px;
-    padding: 14px 0 4px;
-    background: linear-gradient(var(--ground) 12%, var(--ground));
-  }
+}
+
+/* the one action in the panel stays reachable however short the window is */
+.qv-right .config-cta {
+  position: sticky;
+  bottom: -1px;
+  margin-top: auto;
+  padding: 16px 0 6px;
+  background: linear-gradient(color-mix(in srgb, var(--ground) 0%, transparent), var(--ground) 30%);
 }
 
 /* ═══════════════════════ DESIGN FINDER ═══════════════════════ */
@@ -1391,3 +1404,128 @@ section { position: relative; }
    in a narrow frame the softness reads as distance, not as a bad picture. */
 .pw-soft { --w: 23%; --ar: 4 / 4.5; --drop: 48px; }
 @media (max-width: 1000px) { .pw-soft { --w: 50%; --drop: 30px; } }
+
+/* the showroom film plays itself, muted, on a loop */
+.proof-video video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vid-sound {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--brand-ivory);
+  background: color-mix(in srgb, var(--brand-teal-deep) 74%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  opacity: 0.72;
+  transition: opacity var(--speed) var(--easing), color var(--speed);
+}
+.vid-sound:hover, .vid-sound:focus-visible { opacity: 1; color: var(--accent); }
+
+/* the same three worlds, offered again where the browsing happens */
+.ms-compact { margin: 0; }
+.ms-compact .ms-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-compact .ms-btn { padding: 9px 14px; gap: 9px; }
+.ms-compact .ms-name { font-size: 13px; }
+.ms-compact .ms-swatch { width: 13px; height: 13px; }
+
+/* ── walking into the workshop: the light above lifts away ───── */
+.bsp-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 78vh;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--paper) 0%,
+    var(--paper) 30%,
+    color-mix(in srgb, var(--paper) 55%, transparent) 62%,
+    transparent 100%);
+}
+.bsp-wash::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent) 22%, var(--accent) 78%, transparent);
+  opacity: 0.5;
+}
+.bespoke .container { position: relative; z-index: 1; }
+.bsp-head-line {
+  display: block;
+  height: 1px;
+  margin-top: 26px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 10%, transparent));
+}
+
+/* ── the order slip prints itself ────────────────────────────── */
+.wm {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.09em;
+  margin-bottom: -0.09em;
+  margin-right: 0.24em;
+}
+.wm-in { display: inline-block; }
+.ledger-row { position: relative; border-bottom: none; }
+.ledger-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--hairline-light);
+  transform-origin: left center;
+}
+.ledger-row:last-child .ledger-rule { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* the wash only makes sense while it is moving */
+  .bsp-wash { display: none; }
+}
+
+/* the room behind the words, travelling slower than the page */
+.bsp-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.bsp-bg img {
+  position: absolute;
+  top: -16%;
+  left: 0;
+  width: 100%;
+  height: 132%;
+  object-fit: cover;
+  opacity: 0.4;
+  filter: saturate(0.7);
+}
+/* the scrim that keeps ivory text at full contrast over the photograph */
+.bsp-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ground) 0%,
+    color-mix(in srgb, var(--ground) 78%, transparent) 30%,
+    color-mix(in srgb, var(--ground) 62%, transparent) 58%,
+    var(--ground) 100%);
+}
+:root[data-mode='noir'] .bsp-bg img { opacity: 0.5; }
+@media (prefers-reduced-motion: reduce) {
+  .bsp-bg img { top: 0; height: 100%; }
+}

@@ -8,7 +8,12 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const problems = [];
 page.on('pageerror', (e) => problems.push(`EXCEPTION ${e.message}`));
 page.on('console', (m) => m.type() === 'error' && problems.push(`CONSOLE ${m.text()}`));
-page.on('requestfailed', (r) => problems.push(`REQFAIL ${r.url()}`));
+page.on('requestfailed', (r) => {
+  // the film is paused (and its request cancelled) whenever it scrolls away
+  const why = r.failure()?.errorText ?? '';
+  if (/\.mp4$/.test(r.url()) && /ABORTED|CANCELED|CANCELLED/i.test(why)) return;
+  problems.push(`REQFAIL ${r.url()} ${why}`);
+});
 
 await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForTimeout(2200);
@@ -34,7 +39,8 @@ for (const [i, mode] of ['classic', 'modern', 'noir'].entries()) {
     await page.evaluate((n) => document.querySelectorAll('.fp-room')[n]
       .dispatchEvent(new MouseEvent('click', { bubbles: true })), t);
     await page.waitForTimeout(420);
-    if (await page.locator('.pc').count() > 0) roomOk++;
+    // a room with nothing in this world must say so rather than show nothing
+    if (await page.locator('.pc').count() > 0 || await page.locator('.pc-empty').count() > 0) roomOk++;
     await page.evaluate((n) => document.querySelectorAll('.fp-room')[n]
       .dispatchEvent(new MouseEvent('click', { bubbles: true })), t);
     await page.waitForTimeout(380);

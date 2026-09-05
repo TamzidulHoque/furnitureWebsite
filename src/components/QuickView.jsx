@@ -72,18 +72,20 @@ export default function QuickView({ piece, onClose, onStep }) {
     <div className="qv" role="dialog" aria-modal="true" aria-label={piece.name}>
       <div className="qv-veil" ref={veil} onClick={onClose} />
       <div className="qv-card" ref={card} data-lenis-prevent>
-        <button className="qv-close" ref={closeBtn} onClick={onClose} aria-label="Close quick view">×</button>
+        {/* prev / next ride at the top of the card, never below the fold */}
+        <div className="qv-bar">
+          <button onClick={() => onStep(-1)} aria-label="Previous piece">← Prev</button>
+          <span>{catLabel(piece.cat)}</span>
+          <button onClick={() => onStep(1)} aria-label="Next piece">Next →</button>
+          <button className="qv-close" ref={closeBtn} onClick={onClose} aria-label="Close quick view">×</button>
+        </div>
 
+        <div className="qv-body">
         <div className="qv-left">
           <div className="framed">
             <div className="crop">
               <img className="qv-photo" src={piece.img} alt={piece.name} />
             </div>
-          </div>
-          <div className="qv-step">
-            <button onClick={() => onStep(-1)} aria-label="Previous piece">← Prev</button>
-            <span>{catLabel(piece.cat)}</span>
-            <button onClick={() => onStep(1)} aria-label="Next piece">Next →</button>
           </div>
         </div>
 
@@ -155,6 +157,7 @@ export default function QuickView({ piece, onClose, onStep }) {
               Ask About This Piece
             </a>
           </div>
+        </div>
         </div>
       </div>
     </div>

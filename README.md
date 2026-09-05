@@ -27,12 +27,15 @@ Furniture is a considered purchase, so no page here is a dead end.
    workshop (jumps to that shelf, pre-filtered).
 2. **The Collection** — a floor plan of a house, drawn in gold, is the
    navigation: hover a room and its pieces light up on the wall below, click it
-   and everything else flies away. No filter tabs, no card grid — the 33 pieces
+   and everything else flies away. No filter tabs, no card grid — the pieces
    are *hung*, salon-style: brass nail, wire, uneven sizes, uneven drops, a
    shadow on the plaster, and a slow parallax drift as the wall passes. Nine
    widths, heights and drops cycle by position, so adding a piece never needs a
-   layout decision. Live search covers names, rooms and tags, and always
-   searches the whole house.
+   layout decision. **Each world hangs its own furniture** — Classic 14 carved
+   and gilded pieces, Modern 10 plain ones, Noir 9 in lacquer and brass — and a
+   room a world does not build yet says so, and offers the world that does.
+   Live search covers names, rooms and tags, and redraws the plan as a map of
+   the results.
 3. **Design Finder** — three questions (room → feeling → size). The answer to
    question two re-skins the entire site, and the result is three real pieces
    plus a written brief.

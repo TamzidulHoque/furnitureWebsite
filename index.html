@@ -18,6 +18,14 @@
     <link rel="preload" as="image" imagesrcset="/img/bed-hero-sm.webp 760w, /img/bed-hero.webp 1400w" imagesizes="(max-width: 900px) 100vw, 42vw" />
     <title>Heaven Furniture Mart — Furniture, Crafted Around You</title>
     <script>
+      // The world the visitor chose last time, applied before the first paint —
+      // otherwise every return visit flashes Classic while React catches up.
+      try {
+        var hfmMode = localStorage.getItem('heaven-mode');
+        if (hfmMode === 'classic' || hfmMode === 'modern' || hfmMode === 'noir') {
+          document.documentElement.dataset.mode = hfmMode;
+        }
+      } catch (e) {}
       // entrance plays once per session
       try { if (sessionStorage.getItem('hfm-booted')) document.documentElement.classList.add('no-boot'); } catch (e) {}
     </script>

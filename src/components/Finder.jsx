@@ -1,5 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 import QuickView from './QuickView.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
 import { waLink } from '../site.config.js';
@@ -35,6 +37,8 @@ export default function Finder() {
   const [roomW, setRoomW] = useState('');
   const [openId, setOpenId] = useState(null);
   const stageRef = useRef(null);
+  const cardRef = useRef(null);
+  const ownMode = useRef(null);        // the world this finder set itself
 
   const advance = (to) => {
     const el = stageRef.current;
@@ -48,16 +52,50 @@ export default function Finder() {
   const answerRoom = (key) => { setRoom(key); advance(1); };
   const answerWorld = (key) => {
     setWorld(key);
+    ownMode.current = key;   // so the reset below knows this one was us
     setMode(key);            // the whole site turns to match the answer
     advance(2);
   };
+
+  // Changing the world anywhere else on the page means the answers here are
+  // no longer the visitor's — start the three questions again rather than
+  // leaving a stale result standing.
+  useEffect(() => {
+    if (ownMode.current === m.key) return;
+    ownMode.current = m.key;
+    setRoom(null);
+    setWorld(null);
+    setRoomL('');
+    setRoomW('');
+    setStep(0);
+  }, [m.key]);
+
+  // The card draws itself in as it arrives: the frame opens from its own
+  // centre line, then the question and the choices come up behind it.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || reduced()) return;
+    const ctx = gsap.context(() => {
+      gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 82%', once: true } })
+        .fromTo(el, { clipPath: 'inset(46% 0% 46% 0%)', opacity: 0.4 },
+          { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 0.85, ease: 'power3.inOut' })
+        .fromTo('.finder-head > *', { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, 0.42)
+        .fromTo('.finder-stage .opt', { opacity: 0, y: 26 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.055, ease: 'power2.out' }, 0.58);
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   // best three: the chosen room in the chosen world first, then the same
   // room in any world, then anything from that world.
   const picks = useMemo(() => {
     if (!room || !world) return [];
-    const score = (p) => (p.cat === room ? 2 : 0) + (p.world === world ? 1 : 0);
-    return [...CATALOG].sort((a, b) => score(b) - score(a)).filter((p) => score(p) > 0).slice(0, 3);
+    const here = CATALOG.filter((p) => p.world === world);
+    const best = here.filter((p) => p.cat === room);
+    const rest = here.filter((p) => p.cat !== room);
+    const other = CATALOG.filter((p) => p.world !== world && p.cat === room);
+    return [...best, ...rest, ...other].slice(0, 3);
   }, [room, world]);
 
   const roomLabel = ROOMS.find((r) => r.key === room)?.label ?? '';
@@ -86,7 +124,7 @@ export default function Finder() {
   const openIdx = openId ? picks.findIndex((p) => p.id === openId) : -1;
 
   return (
-    <div className="finder" id="finder">
+    <div className="finder" id="finder" ref={cardRef}>
       <div className="finder-head">
         <p className="eyebrow">Design Finder</p>
         <h3>Three questions, three pieces.</h3>
