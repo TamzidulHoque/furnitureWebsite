@@ -546,6 +546,18 @@ export const CATALOG = [
     soft: true,
   },
   {
+    id: 'quilted-dining-chair',
+    name: 'Quilted Dining Chair',
+    cat: 'dining',
+    room: 'dining',
+    img: '/img/chair-quilted-dining.webp',
+    world: 'noir',
+    blurb: 'Diamond-quilted leatherette under a carved gilt crest.',
+    spec: 'Hardwood frame · diamond-quilted leatherette · gilded legs and crest',
+    tags: ['chair', 'dining', 'quilted', 'leather', 'gold', 'carved'],
+    finish: ['wood', 'fabric'],
+  },
+  {
     id: 'fanback-dining-chair',
     name: 'Fan-Back Dining Chair',
     cat: 'dining',

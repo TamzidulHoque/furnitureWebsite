@@ -36,11 +36,14 @@ const ROOMS = {
     img: '/img/office-desk.webp',
     title: 'A working floor, finished',
     note: 'Desks, seating and storage drawn to one plan.',
+    // Every dot here opens a piece. The one on the low storage run did not —
+    // there is no such piece in the catalogue, so it could only scroll the
+    // visitor to a filtered list, which is not what pressing a dot on a
+    // photograph promises.
     spots: [
       { x: 34, y: 68.1, id: 'manager-desk' },
       { x: 56, y: 50, id: 'mesh-task-chair' },
       { x: 78, y: 53.4, id: 'director-desk', label: 'Desk Beyond' },
-      { x: 20, y: 47.4, room: 'office', label: 'Low Storage' },
     ],
   },
   noir: {
@@ -49,8 +52,8 @@ const ROOMS = {
     note: 'Marble, velvet and brass, cut to your room.',
     spots: [
       { x: 47, y: 62.1, id: 'marble-dining-noir' },
-      { x: 22, y: 55.2, room: 'dining', label: 'Quilted Dining Chair' },
-      { x: 8, y: 37.4, room: 'living', label: 'Consoles & Cabinets' },
+      { x: 22, y: 55.2, id: 'quilted-dining-chair' },
+      { x: 8, y: 37.4, id: 'lacquer-console' },
     ],
   },
 };

@@ -4,7 +4,7 @@
 //
 //   npm run build && node scripts/preflight.mjs
 import { chromium } from 'playwright';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 
 const PORT = 4231;
@@ -25,6 +25,16 @@ const ok = (m) => console.log('  ok   ' + m);
 for (const f of ['og.jpg', 'favicon.png', 'apple-touch-icon.png', 'robots.txt']) {
   fs.existsSync(`dist/${f}`) ? ok(`dist/${f}`) : fail(`dist/${f} is missing`);
 }
+
+const stopServer = () => {
+  // spawn(..., { shell: true }) on Windows puts a cmd.exe between us and vite,
+  // and killing that leaves the server running and the port held. Every run
+  // used to leak one. /T takes the whole tree.
+  if (process.platform === 'win32') {
+    try { spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' }); } catch { /* already gone */ }
+  }
+  server.kill();
+};
 
 const browser = await chromium.launch();
 let bytes = 0;
@@ -82,7 +92,6 @@ for (const vp of [{ width: 1440, height: 900, label: 'desktop' }, { width: 390, 
 
 console.log(`  --   first-load weight walked through every world: ${(bytes / 1024 / 1024).toFixed(1)}MB`);
 await browser.close();
-server.kill();
-spawn('npx', ['kill-port', String(PORT)], { shell: true, stdio: 'ignore' }).unref?.();
+stopServer();
 console.log(bad ? `\nNOT READY (${bad})` : '\nREADY TO DEPLOY');
 process.exit(bad ? 1 : 0);

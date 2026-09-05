@@ -17,6 +17,7 @@ export const IMG_SIZES = {
   "chair-exec-wood": { w: 1080, h: 1080, sm: 540 },
   "chair-fanback": { w: 640, h: 640, sm: 320 },
   "chair-lounge-blue": { w: 640, h: 640, sm: 320 },
+  "chair-quilted-dining": { w: 1375, h: 3049, sm: 688 },
   "chairs-barrel": { w: 1440, h: 1440, sm: 720 },
   "chairs-pair": { w: 1024, h: 1024, sm: 512 },
   "chaise-gold": { w: 1536, h: 2048, sm: 768 },

@@ -6,7 +6,7 @@
 // run on a clean machine with nothing else set up.
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { CATALOG } from '../src/data/catalog.js';
 import { PLAN_ROOMS } from '../src/data/rooms.js';
@@ -37,9 +37,12 @@ before(async () => {
 
 after(async () => {
   await browser?.close();
+  // vite spawns through a shell on Windows, so killing what we spawned leaves
+  // the server running and the port held; /T takes the whole tree with it.
+  if (server?.pid && process.platform === 'win32') {
+    try { spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' }); } catch { /* already gone */ }
+  }
   server?.kill();
-  // vite spawns through a shell on Windows; make sure the port is really free
-  spawn('npx', ['kill-port', String(PORT)], { shell: true, stdio: 'ignore' }).unref?.();
 });
 
 /** A page that records anything the browser complains about. */

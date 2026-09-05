@@ -3,7 +3,7 @@
 //
 //   npm run build && node scripts/check-hero.mjs
 import { chromium } from 'playwright';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 
 const PORT = 4197;
 const URL = `http://localhost:${PORT}`;
@@ -14,6 +14,16 @@ for (let i = 0; i < 60; i++) {
   try { if ((await fetch(URL)).ok) break; } catch { /* not up yet */ }
   await new Promise((r) => setTimeout(r, 500));
 }
+
+const stopServer = () => {
+  // spawn(..., { shell: true }) on Windows puts a cmd.exe between us and vite,
+  // and killing that leaves the server running and the port held. Every run
+  // used to leak one. /T takes the whole tree.
+  if (process.platform === 'win32') {
+    try { spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' }); } catch { /* already gone */ }
+  }
+  server.kill();
+};
 
 const browser = await chromium.launch();
 let bad = 0;
@@ -57,7 +67,6 @@ for (const vp of [{ width: 1440, height: 900, label: 'desktop' }, { width: 390, 
 }
 
 await browser.close();
-server.kill();
-spawn('npx', ['kill-port', String(PORT)], { shell: true, stdio: 'ignore' }).unref?.();
+stopServer();
 console.log(bad ? `\nFAIL (${bad})` : '\nALL GOOD');
 process.exit(bad ? 1 : 0);

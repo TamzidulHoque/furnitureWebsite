@@ -9,8 +9,6 @@ export const MODES = {
   classic: {
     key: 'classic',
     name: 'Classic',
-    desc: 'carved, gilded, ceremonial',
-    swatch: 'linear-gradient(135deg, #2c4543 50%, #d4a94f 50%)',
     wipeColor: '#2c4543',
     logo: '/img/logo-light.png',
     wipeInk: '#d4a94f',
@@ -33,8 +31,6 @@ export const MODES = {
   modern: {
     key: 'modern',
     name: 'Modern',
-    desc: 'clean lines, light woods',
-    swatch: 'linear-gradient(135deg, #faf8f3 50%, #c9a87c 50%)',
     wipeColor: '#f1eee6',
     logo: '/img/logo-dark.png',
     wipeInk: '#96803c',
@@ -57,8 +53,6 @@ export const MODES = {
   noir: {
     key: 'noir',
     name: 'Noir',
-    desc: 'dark lacquer, brass',
-    swatch: 'linear-gradient(135deg, #171310 50%, #c9973f 50%)',
     wipeColor: '#171310',
     logo: '/img/logo-light.png',
     wipeInk: '#c9973f',
