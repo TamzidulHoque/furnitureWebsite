@@ -15,7 +15,9 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" as="image" imagesrcset="/img/bed-hero-sm.webp 760w, /img/bed-hero.webp 1400w" imagesizes="(max-width: 900px) 100vw, 42vw" />
+    <!-- Same candidates the hero renders (see src/lib/img.js) — real widths,
+         so the preload and the <img> resolve to one and the same file. -->
+    <link rel="preload" as="image" imagesrcset="/img/bed-hero-sm.webp 668w, /img/bed-hero.webp 1335w" imagesizes="(max-width: 900px) 100vw, 42vw" />
     <title>Heaven Furniture Mart — Furniture, Crafted Around You</title>
     <script>
       // Every visit opens in Classic. The site is a showroom: the front door

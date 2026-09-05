@@ -93,26 +93,33 @@ export default function Ornament({ variant = 'a', pos = 'tr' }) {
     if (!el || !section) return;
 
     const fromSide = pos.includes('l') ? -1 : 1;
+    // Where the browser has view timelines, the arriving-holding-leaving travel
+    // is CSS (see .ornament in sections.css) and runs off the main thread; all
+    // that is left here is the line-drawing inside the ornament, once, when the
+    // section first shows up. Where it does not, this owns the whole thing and
+    // the ornament draws in on arrival and stays, as it did before.
+    const cssTravels = typeof CSS !== 'undefined'
+      && CSS.supports?.('animation-timeline', 'view()')
+      && window.innerWidth > 900;
     let ctx;
-    // Drawn once, when the section first arrives. It used to be scrubbed to
-    // the scrollbar, which meant GSAP measuring and re-drawing five ornaments
-    // on every scrolled frame for a piece of decoration.
     const stop = onFirstView(section, () => {
       ctx = gsap.context(() => {
         const tl = gsap.timeline();
+        const appear = (vars, at) => (cssTravels ? tl : tl.fromTo(el, { autoAlpha: 0, ...vars.from }, { ...vars.to, ...at }));
         if (mode === 'classic') {
           const paths = el.querySelectorAll('path, circle, rect');
           gsap.set(paths, { strokeDasharray: (i, t) => t.getAttribute('strokeDasharray') || '1 1', strokeDashoffset: 1 });
-          tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 0.55, duration: 0.5 })
-            .to(paths, { strokeDashoffset: 0, duration: 1.1, stagger: 0.06, ease: 'power2.out' }, 0.1);
+          appear({ from: {}, to: { autoAlpha: 0.55 } }, { duration: 0.5 });
+          tl.to(paths, { strokeDashoffset: 0, duration: 1.1, stagger: 0.06, ease: 'power2.out' }, 0.1);
         } else if (mode === 'modern') {
-          tl.fromTo(el, { autoAlpha: 0, x: 70 * fromSide, y: 24 },
-            { autoAlpha: 0.42, x: 0, y: 0, duration: 1.1, ease: 'power3.out' });
+          appear({ from: { x: 70 * fromSide, y: 24 }, to: { autoAlpha: 0.42, x: 0, y: 0 } },
+            { duration: 1.1, ease: 'power3.out' });
         } else {
           const stitch = el.querySelectorAll('.stitch');
           gsap.set(stitch, { strokeDashoffset: 1 });
-          tl.fromTo(el, { autoAlpha: 0, x: 90 * fromSide }, { autoAlpha: 0.85, x: 0, duration: 1, ease: 'power3.out' })
-            .to(stitch, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out' }, 0.2);
+          appear({ from: { x: 90 * fromSide }, to: { autoAlpha: 0.85, x: 0 } },
+            { duration: 1, ease: 'power3.out' });
+          tl.to(stitch, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out' }, 0.2);
         }
       }, el);
     }, '0px 0px -20% 0px');

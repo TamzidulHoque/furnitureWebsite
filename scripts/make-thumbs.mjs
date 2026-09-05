@@ -28,8 +28,7 @@ const PICKS = [
   // Thumbnails that are real posts but could not survive being blown up to
   // catalogue size — promo graphics, and two shots whose framing was wrong
   // for a card. At 96px they are exactly what a feed strip should hold.
-  '131442592_133955508529379_461101547863506377_n.jpg',
-  '199413155_252926326632296_1175563256441276276_n.jpg',
+  '497458359_1289388343192662_3550378067329039407_n.jpg',
   '283167868_471130828145177_8511377903658429164_n.jpg',
   '473222648_1068816478376606_248436287551556573_n.jpg',
   '488656120_1251377840327046_3265684678540287227_n.jpg',

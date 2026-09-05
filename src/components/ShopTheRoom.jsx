@@ -4,48 +4,51 @@ import { onFirstView } from '../hooks/useMotion.js';
 import QuickView from './QuickView.jsx';
 import Ornament from './Ornament.jsx';
 import { useMode } from '../mode/ModeContext.jsx';
-import { srcset } from '../lib/img.js';
+import { srcset, ratio } from '../lib/img.js';
 import { byId } from '../data/catalog.js';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // A finished room per world. Every dot is a real piece (id) or a real
 // part of the workshop (cat) — nothing here is decoration only.
-// x / y are percentages of the photo, which is shown at its own ratio
-// so the dots land exactly where they were placed.
+//
+// x / y are percentages of the photograph, and the frame is reserved at that
+// photograph's own shape — read from the file by ratio(), never written down
+// here. These numbers were placed against cropped frames; when the photographs
+// were re-imported whole they all had to move, which is the whole argument for
+// not keeping a copy of the shape in this file.
 const ROOMS = {
   classic: {
     img: '/img/living-royal.webp',
-    ratio: '1024 / 590',
     title: 'A Chattogram drawing room',
     note: 'Every piece below was built in our Agrabad workshop.',
     spots: [
-      { x: 20, y: 22, id: 'royal-tufted-sofa' },
-      { x: 41, y: 69, room: 'living', label: 'Gilded Centre Table' },
-      { x: 88, y: 22, id: 'floral-salon-sofa', label: 'Matching Settee' },
+      // the sofa in this photograph is no longer a piece in the catalogue,
+      // so this dot opens the living room rather than a card that is not there
+      { x: 20, y: 38.7, room: 'living', label: 'Royal Tufted Sofa' },
+      { x: 41, y: 65.7, room: 'living', label: 'Gilded Centre Table' },
+      { x: 88, y: 38.7, id: 'floral-salon-sofa', label: 'Matching Settee' },
     ],
   },
   modern: {
     img: '/img/office-desk.webp',
-    ratio: '1080 / 931',
     title: 'A working floor, finished',
     note: 'Desks, seating and storage drawn to one plan.',
     spots: [
-      { x: 34, y: 79, id: 'manager-desk' },
-      { x: 56, y: 58, id: 'mesh-task-chair' },
-      { x: 78, y: 62, id: 'director-desk', label: 'Desk Beyond' },
-      { x: 20, y: 55, room: 'office', label: 'Low Storage' },
+      { x: 34, y: 68.1, id: 'manager-desk' },
+      { x: 56, y: 50, id: 'mesh-task-chair' },
+      { x: 78, y: 53.4, id: 'director-desk', label: 'Desk Beyond' },
+      { x: 20, y: 47.4, room: 'office', label: 'Low Storage' },
     ],
   },
   noir: {
     img: '/img/dining-noir.webp',
-    ratio: '1024 / 590',
     title: 'Dinner, after dark',
     note: 'Marble, velvet and brass, cut to your room.',
     spots: [
-      { x: 47, y: 61, id: 'marble-dining-noir' },
-      { x: 22, y: 49, room: 'dining', label: 'Quilted Dining Chair' },
-      { x: 8, y: 18, room: 'living', label: 'Consoles & Cabinets' },
+      { x: 47, y: 62.1, id: 'marble-dining-noir' },
+      { x: 22, y: 55.2, room: 'dining', label: 'Quilted Dining Chair' },
+      { x: 8, y: 37.4, room: 'living', label: 'Consoles & Cabinets' },
     ],
   },
 };
@@ -95,7 +98,7 @@ export default function ShopTheRoom() {
 
         <div className="str-stage rv-img" ref={wrap}>
           <div className="framed">
-            <div className="crop" style={{ aspectRatio: room.ratio }}>
+            <div className="crop" style={{ aspectRatio: ratio(room.img) }}>
               <img src={room.img} srcSet={srcset(room.img)} sizes="(max-width: 900px) 100vw, 58vw" alt={room.title} decoding="async" />
               {room.spots.map((s) => {
                 const piece = s.id ? byId(s.id) : null;

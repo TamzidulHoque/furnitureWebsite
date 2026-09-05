@@ -9,7 +9,8 @@
     "assets:images": "node scripts/process-images.mjs",
     "test": "node --test --test-concurrency=1 tests/catalog.test.mjs tests/e2e.test.mjs",
     "test:data": "node --test tests/catalog.test.mjs",
-    "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e.test.mjs"
+    "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e.test.mjs",
+    "check:hero": "npm run build && node scripts/check-hero.mjs"
   },
   "keywords": [],
   "author": "",

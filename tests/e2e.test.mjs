@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright';
 import { CATALOG } from '../src/data/catalog.js';
+import { PLAN_ROOMS } from '../src/data/rooms.js';
 
 const PORT = 4188;
 const URL = `http://localhost:${PORT}`;
@@ -187,15 +188,26 @@ describe('each world shows its own furniture', () => {
   }
 
   test('a room a world does not build says so, and offers the world that does', async () => {
+    // Which room is empty is a fact about the catalogue, not about this test.
+    // It used to say "Modern has no living room"; three living pieces were
+    // added to Modern and the assertion went stale, so the gap is looked up.
+    const gap = WORLDS.flatMap((w, wi) => PLAN_ROOMS.map((r, ri) => ({ w, wi, r, ri })))
+      .find(({ w, r }) => !CATALOG.some((p) => p.world === w && p.room === r.key)
+        && WORLDS.some((o) => CATALOG.some((p) => p.world === o && p.room === r.key)));
+    assert.ok(gap, 'no world has an empty room any more — this test has nothing to check');
+    const covers = WORLDS.filter((o) => CATALOG.some((p) => p.world === o && p.room === gap.r.key));
+
     const page = await openPage();
-    await switchWorld(page, 1);                        // Modern has no living room
-    await page.evaluate(() => document.querySelectorAll('.fp-room')[1]
-      .dispatchEvent(new MouseEvent('click', { bubbles: true })));
+    if (gap.wi) await switchWorld(page, gap.wi);
+    await page.evaluate((n) => document.querySelectorAll('.fp-room')[n]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true })), gap.ri);
     await page.waitForTimeout(700);
-    assert.equal(await pieceCount(page), 0);
+    assert.equal(await pieceCount(page), 0, `${gap.w}/${gap.r.key} should be empty`);
     const said = await page.textContent('.pc-empty');
-    assert.match(said, /No living piece stands on the Modern floor/i);
-    assert.match(said, /Classic/);
+    const worldName = gap.w[0].toUpperCase() + gap.w.slice(1);
+    assert.match(said, new RegExp(`No ${gap.r.label} piece stands on the ${worldName} floor`, 'i'));
+    assert.ok(covers.some((o) => new RegExp(o, 'i').test(said)),
+      `nothing offered the visitor a world that does build ${gap.r.key}`);
     // and the way out works
     await page.click('.pc-empty .linkish');
     await page.waitForFunction(() => document.documentElement.dataset.mode === 'classic');
@@ -375,6 +387,37 @@ describe('design finder', () => {
 // ─────────────────────────── shop the room ──────────────────────────
 
 describe('shop the room', () => {
+  // The photograph hides itself with clip-path until it is revealed, and a
+  // clipped element has no area for an IntersectionObserver to see — watch it
+  // directly and it waits forever for a reveal that cannot arrive. That
+  // deadlock left this photograph blank in every world without failing a
+  // single test, because the reduced-motion suite turns the clip off.
+  test('the room photograph is actually on screen', async () => {
+    const page = await openPage();
+    await sweep(page);
+    await page.waitForTimeout(700);
+    for (let i = 0; i < WORLDS.length; i++) {
+      if (i) { await switchWorld(page, i); await sweep(page); await page.waitForTimeout(700); }
+      const seen = await page.evaluate(() => {
+        const st = document.querySelector('.str-stage');
+        const img = st.querySelector('img');
+        const clip = getComputedStyle(st).clipPath;
+        return {
+          revealed: st.classList.contains('is-in'),
+          // inset(... 100% ...) is the closed state: nothing is being shown
+          closed: /100%/.test(clip),
+          drawn: img.naturalWidth > 0 && img.getBoundingClientRect().height > 40,
+          left: [...document.querySelectorAll('.rv, .rv-img')].filter((e) => !e.classList.contains('is-in')).length,
+        };
+      });
+      assert.ok(seen.revealed, `${WORLDS[i]}: the room photograph never revealed`);
+      assert.ok(!seen.closed, `${WORLDS[i]}: the room photograph is still clipped away`);
+      assert.ok(seen.drawn, `${WORLDS[i]}: the room photograph has no picture in it`);
+      assert.equal(seen.left, 0, `${WORLDS[i]}: ${seen.left} sections never revealed`);
+    }
+    await page.ctx.close();
+  });
+
   test('a hotspot opens the piece it points at', async () => {
     const page = await openPage();
     await sweep(page);

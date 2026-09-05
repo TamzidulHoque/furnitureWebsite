@@ -707,7 +707,7 @@ blockquote.big-quote {
 
 /* ═══════════════ HERO STAGE (multi-image, per-mode fx) ═══════════════ */
 .hero-stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
-.hs-layer { position: absolute; inset: 0; }
+.hs-layer { position: absolute; inset: 0; pointer-events: none; }
 .hs-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hs-base { z-index: 1; }
 .hs-fx { z-index: 2; opacity: 0; visibility: hidden; }
@@ -716,20 +716,36 @@ blockquote.big-quote {
   width: 1px; z-index: 3;
   background: linear-gradient(transparent, var(--accent), transparent);
   transform-origin: center;
+  pointer-events: none;
   opacity: 0; visibility: hidden;
 }
 .hs-dots {
-  position: absolute; bottom: 14px; left: 16px; z-index: 4;
-  display: flex; gap: 8px;
+  position: absolute; bottom: 0; left: 12px; z-index: 6;
+  display: flex;
 }
+/* The rule is 3px tall — nobody can hit 3px. The button is padded out to a
+   real target and the span inside is the mark you see, so the picture can be
+   changed by hand on a phone as easily as with a mouse. */
 .hs-dot {
-  width: 22px; height: 3px;
-  background: rgba(255, 255, 255, 0.38);
-  border-radius: 2px;
-  transition: background 0.3s, width 0.3s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 4px;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.hs-dot.active { background: var(--accent); width: 34px; }
-.hs-dot:hover { background: rgba(255, 255, 255, 0.7); }
+.hs-dot > span {
+  display: block;
+  width: 22px; height: 3px;
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: background 0.25s, width 0.25s;
+}
+.hs-dot.active > span { background: var(--accent); width: 34px; }
+.hs-dot:hover > span,
+.hs-dot:focus-visible > span { background: rgba(255, 255, 255, 0.85); }
+.hs-dot:active > span { background: var(--accent); }
+.hs-dot:focus-visible { outline-offset: -2px; }
 
 /* ═══════════════ INTRO — watermark + parallax collage ═══════════════ */
 .intro { position: relative; overflow: hidden; }
@@ -766,6 +782,51 @@ blockquote.big-quote {
 .ic-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ic-a { width: 62%; aspect-ratio: 3 / 3.6; left: 0; top: 6px; z-index: 1; }
 .ic-b { width: 52%; aspect-ratio: 3 / 2.6; right: 0; top: 44%; z-index: 2; }
+
+/* ── the intro moves while you read it ─────────────────────────
+   HEAVEN drifts in from the right and the two photographs ride at different
+   speeds, so the section reads as depth rather than as a flat block. This is
+   the motion the intro had before the scroll layer was rebuilt, with the same
+   numbers — it is driven by a view timeline now instead of three scrubbed
+   ScrollTriggers, so the browser runs it off the main thread and nothing at
+   all measures or updates on the scroll path. That is what made it safe to
+   put back. Where view timelines are unsupported the section simply stands
+   still, exactly as it does today. */
+/* every section is its own scroll subject; a descendant resolves to the
+   nearest one above it, so one name serves the whole page */
+section { view-timeline-name: --sec-view; }
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .intro-mark,
+    .intro .ic-a,
+    .intro .ic-b {
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --sec-view;
+      /* from the moment the section starts entering to the moment it has
+         wholly left — the old start:'top bottom' end:'bottom top' */
+      animation-range: cover 0% cover 100%;
+    }
+    .intro-mark { animation-name: intro-mark-drift; }
+    .intro .ic-a { animation-name: intro-photo-a; }
+    .intro .ic-b { animation-name: intro-photo-b; }
+  }
+}
+
+@keyframes intro-mark-drift {
+  from { transform: translateX(4%); }
+  to { transform: translateX(-10%); }
+}
+@keyframes intro-photo-a {
+  from { transform: translateY(14%) rotate(-1.6deg); }
+  to { transform: translateY(-14%) rotate(1.2deg); }
+}
+@keyframes intro-photo-b {
+  from { transform: translateY(26%) rotate(2.2deg); }
+  to { transform: translateY(-8%) rotate(-1.4deg); }
+}
 @media (max-width: 900px) {
   .intro-collage { height: 260px; }
   .intro-mark { font-size: 150px; top: 4%; left: 30%; }
@@ -786,6 +847,53 @@ section { position: relative; }
 .orn-br { bottom: 44px; right: 34px; }
 .orn-bl { bottom: 44px; left: 34px; }
 @media (max-width: 900px) { .ornament { display: none; } }
+
+/* ── the corner ornaments travel with the section ──────────────
+   They used to arrive, hold, and leave again as the section went past. That
+   was one scrubbed ScrollTrigger per ornament — five of them re-measured on
+   every scrolled frame for a piece of decoration — so they were cut back to
+   drawing once and sitting still. The travel is back, on a view timeline the
+   browser runs off the main thread, so it costs nothing on the scroll path.
+   The fine line-drawing inside each ornament is still GSAP, once, on arrival.
+   Where view timelines are unsupported Ornament.jsx keeps the old behaviour,
+   which is why it asks the browser rather than assuming. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
+    .ornament {
+      visibility: visible;
+      --orn-side: 1;                 /* which way it leaves: out past its own corner */
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --sec-view;
+      animation-range: cover 12% cover 88%;
+    }
+    .orn-tl, .orn-bl { --orn-side: -1; }
+    :root[data-mode='classic'] .ornament { animation-name: orn-classic; }
+    :root[data-mode='modern'] .ornament { animation-name: orn-modern; }
+    :root[data-mode='noir'] .ornament { animation-name: orn-noir; }
+  }
+}
+
+/* in, hold, out — the proportions the scrubbed timelines had */
+@keyframes orn-classic {
+  0% { opacity: 0; transform: translateY(0); }
+  13% { opacity: 0.55; transform: translateY(0); }
+  74% { opacity: 0.55; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-26px); }
+}
+@keyframes orn-modern {
+  0% { opacity: 0; transform: translate(calc(70px * var(--orn-side)), 24px); }
+  33% { opacity: 0.42; transform: translate(0, 0); }
+  71% { opacity: 0.42; transform: translate(0, 0); }
+  100% { opacity: 0; transform: translateX(calc(-46px * var(--orn-side))); }
+}
+@keyframes orn-noir {
+  0% { opacity: 0; transform: translateX(calc(90px * var(--orn-side))); }
+  31% { opacity: 0.85; transform: translateX(0); }
+  73% { opacity: 0.85; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(calc(60px * var(--orn-side))); }
+}
 
 /* ═══════════════ PROOF VIDEO ═══════════════ */
 .proof-video { position: relative; height: 100%; }
@@ -843,7 +951,7 @@ section { position: relative; }
 .room-unit { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; }
 
 /* classic curtain: two halves of the outgoing picture, drawn aside */
-.hs-curtain { position: absolute; inset: 0; z-index: 3; opacity: 0; visibility: hidden; }
+.hs-curtain { position: absolute; inset: 0; z-index: 3; opacity: 0; visibility: hidden; pointer-events: none; }
 .hs-half { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; }
 .hs-half img { position: absolute; top: 0; height: 100%; width: 200%; max-width: none; object-fit: cover; }
 .hs-half-l { left: 0; }
@@ -858,6 +966,7 @@ section { position: relative; }
   width: 3px;
   z-index: 4;
   transform: rotate(9deg);
+  pointer-events: none;
   background: linear-gradient(transparent, var(--accent) 18%, #f4dfae 50%, var(--accent) 82%, transparent);
   box-shadow: 0 0 22px 3px color-mix(in srgb, var(--accent) 45%, transparent);
   opacity: 0; visibility: hidden;

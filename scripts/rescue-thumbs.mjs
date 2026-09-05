@@ -6,9 +6,12 @@
 // softer than a native photo but holds up at card size — verified against a
 // native 1024px reference before any of these were added.
 //
-// Crops cut the burnt-in watermark / phone number, in fractions of the frame.
+// `crop` is optional and only survives on the four rescues that predate the
+// decision to stop cropping; everything added since is imported whole, burnt-in
+// words and all, and the widths it produces are recorded for srcset.
 import sharp from 'sharp';
 import fs from 'node:fs';
+import { readSizes, writeSizes, SIZES_FILE } from './img-sizes.mjs';
 
 const OUT = 'public/img';
 const A = 'assets';
@@ -19,16 +22,26 @@ const MANIFEST = [
   { src: '489006229_1251377810327049_7491661709415816003_n.jpg', out: 'cabinet-carved',  crop: [0, 0, 1, 0.85] },
   { src: '489028849_1253430670121763_4556565440412790620_n.jpg', out: 'wardrobe-light',  crop: [0, 0.08, 1, 1] },
   { src: '489031435_1253429823455181_846534373995314612_n.jpg',  out: 'wardrobe-fluted', crop: [0, 0.22, 1, 1] },
-  // Two more were tried and cut, not for resolution but for the frame:
-  // 489769079 (wardrobe + mirror) is tilted and shows the room through the
-  // glass; 489314337 (teal daybed) crops down to a cushion and a rug. Both
-  // go to the feed strip instead, where 206px is native and they read fine.
+  // 489314337 (teal daybed) was tried and cut — it crops down to a cushion and
+  // a rug — and goes to the feed strip instead, where 206px is native.
+
+  // ---------- added to Modern ----------
+  { src: '491832270_1263948362403327_74565567019733717_n.jpg',    out: 'sofa-bolster-cream' },
+  { src: '617975832_1518889546909206_8894490353968158499_n.jpg',  out: 'chair-lounge-blue' },
+  { src: '473222648_1068816478376606_248436287551556573_n.jpg',   out: 'sofa-divan' },
+  // ---------- added to Noir ----------
+  { src: '487171450_1241309371333893_1676895647074399691_n.jpg',  out: 'bed-leather-panel' },
+  { src: '491038728_1261873919277438_6722909313788726982_n.jpg',  out: 'bed-carved-dark' },
+  { src: '489769079_1252027256928771_2053032286453354656_n.jpg',  out: 'wardrobe-mirror' },
+  { src: '513873650_1328935085904654_3174611049047654652_n.jpg',  out: 'chair-fanback' },
 ];
+
+const sizes = readSizes();
 
 for (const item of MANIFEST) {
   const img = sharp(`${A}/${item.src}`).rotate();
   const meta = await img.metadata();
-  const [x0, y0, x1, y1] = item.crop;
+  const [x0, y0, x1, y1] = item.crop ?? [0, 0, 1, 1];
   const region = {
     left: Math.round(meta.width * x0),
     top: Math.round(meta.height * y0),
@@ -48,6 +61,8 @@ for (const item of MANIFEST) {
     .sharpen({ sigma: 0.9, m1: 0.4, m2: 2 })
     .webp({ quality: 84 }).toFile(`${OUT}/${item.out}-sm.webp`);
 
-  console.log(`${item.out.padEnd(17)} 206x206 -> ${region.width}x${region.height} @${FULL}w`);
+  const done = await sharp(`${OUT}/${item.out}.webp`).metadata();
+  sizes[item.out] = { w: done.width, h: done.height, sm: Math.round(FULL / 2) };
+  console.log(`${item.out.padEnd(19)} 206x206 -> ${done.width}x${done.height}`);
 }
-console.log('DONE');
+console.log(`DONE — ${SIZES_FILE} updated (${writeSizes(sizes)} pictures)`);

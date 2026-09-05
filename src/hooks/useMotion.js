@@ -48,13 +48,27 @@ export function useReveals(dep) {
       return;
     }
 
+    // A .rv-img hides itself with clip-path: inset(0 0 100% 0) — no rendered
+    // area at all — and an IntersectionObserver never reports a zero-area
+    // target as intersecting. Watched directly it would wait forever for a
+    // reveal that cannot arrive; that deadlock is how the Shop The Room
+    // photograph went missing. Its container is not clipped, so the container
+    // is what gets watched and the reveal is passed back to the element.
+    const sentinel = (el) => (el.classList.contains('rv-img') && el.parentElement) || el;
+    const waiting = new Map();     // watched node -> elements to reveal
+
+    const reveal = (el) => {
+      const delay = parseFloat(el.dataset.rvDelay);
+      if (delay) el.style.setProperty('--rv-delay', `${delay}s`);
+      el.classList.add('is-in');
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
-          const delay = parseFloat(e.target.dataset.rvDelay);
-          if (delay) e.target.style.setProperty('--rv-delay', `${delay}s`);
-          e.target.classList.add('is-in');
+          (waiting.get(e.target) ?? [e.target]).forEach(reveal);
+          waiting.delete(e.target);
           io.unobserve(e.target);   // a reveal happens once
         }
       },
@@ -64,8 +78,12 @@ export function useReveals(dep) {
       // anything already on screen when this runs is revealed straight away,
       // so a reload half-way down the page never shows a blank section
       const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
-      else io.observe(el);
+      if (r.top < window.innerHeight && r.bottom > 0) { reveal(el); return; }
+      const node = sentinel(el);
+      const group = waiting.get(node);
+      if (group) { group.push(el); return; }   // two of them sharing a container
+      waiting.set(node, [el]);
+      io.observe(node);
     });
     return () => io.disconnect();
   }, [dep]);

@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useMode } from '../mode/ModeContext.jsx';
+import { srcset, setImg } from '../lib/img.js';
 import { WA_DEFAULT } from '../site.config.js';
 import ModeSwitch from './ModeSwitch.jsx';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// The hero keeps its own descriptors rather than the shared lib/img helper:
-// these must match the <link rel="preload" imagesrcset> in index.html exactly,
-// and 760w is what makes a DPR-2 phone pick the small file for the LCP image.
+// The hero shares the site's descriptors, which carry each file's real pixel
+// width — see lib/img.js. The <link rel="preload"> in index.html has to name
+// the same candidates or the LCP image gets fetched twice.
 const SIZES = '(max-width: 900px) 100vw, 42vw';
-const srcset = (src) => `${src.replace('.webp', '-sm.webp')} 760w, ${src} 1400w`;
-const setImg = (el, src) => { el.srcset = srcset(src); el.src = src; };
 
 // Multi-image stage. Each world changes its picture its own way:
 // classic — the standing image splits and draws aside like a stage curtain ·
@@ -26,7 +25,11 @@ function HeroStage({ idx, setIdx }) {
   const curtain = useRef(null);
   const edge = useRef(null);
   const stage = useRef(null);
-  const busy = useRef(false);
+  const tl = useRef(null);
+  // what is actually on the base layer right now. The base image is set
+  // imperatively mid-animation, so React's idx is a beat ahead of it — the
+  // curtain has to tear up the picture on show, not the one being dealt.
+  const shown = useRef(m.heroImgs[0]);
   const opened = useRef(false);
   const imgs = m.heroImgs;
 
@@ -35,73 +38,86 @@ function HeroStage({ idx, setIdx }) {
     if (opened.current || reduced()) return;
     opened.current = true;
     gsap.fromTo(baseImg.current, { scale: 2.3, filter: 'blur(2px)' },
-      { scale: 1, filter: 'blur(0px)', duration: 1.9, ease: 'power3.inOut' });
+      { scale: 1, filter: 'blur(0px)', duration: 1.25, ease: 'power3.inOut' });
   }, []);
 
-  // world switch: settle the new set in
+  // world switch: drop anything mid-flight, then settle the new set in
   useEffect(() => {
+    tl.current?.kill();
+    tl.current = null;
     setIdx(0);
+    shown.current = m.heroImgs[0];
     if (baseImg.current) {
+      gsap.set([fxLayer.current, curtain.current, seam.current, edge.current], { autoAlpha: 0 });
+      gsap.set(curtain.current.children, { clearProps: 'transform' });
+      gsap.set(baseImg.current, { clearProps: 'transform,filter,opacity' });
       setImg(baseImg.current, m.heroImgs[0]);
-      if (!reduced()) gsap.fromTo(baseImg.current, { scale: 1.08 }, { scale: 1, duration: 1.1, ease: 'power2.out' });
+      if (!reduced()) gsap.fromTo(baseImg.current, { scale: 1.08 }, { scale: 1, duration: 0.7, ease: 'power2.out' });
     }
   }, [m.key]);
 
   const go = (next) => {
-    if (busy.current || next === idx) return;
+    if (next === idx || !imgs[next]) return;
+    const from = shown.current;
     const target = imgs[next];
+    // the dot lights up and the caption turns over on the press, not when the
+    // animation lands — otherwise the controls feel a beat behind the finger
+    setIdx(next);
     if (reduced()) {
       setImg(baseImg.current, target);
-      setIdx(next);
+      shown.current = target;
       return;
     }
-    busy.current = true;
+    // a press during a transition finishes that one on the spot rather than
+    // being swallowed — every press changes the picture
+    tl.current?.progress(1);
     setImg(fxImg.current, target);
     const done = () => {
       setImg(baseImg.current, target);
+      shown.current = target;
       gsap.set(fxLayer.current, { clearProps: 'all', autoAlpha: 0 });
       gsap.set(baseImg.current, { clearProps: 'transform,filter,opacity' });
       gsap.set(seam.current, { autoAlpha: 0 });
       gsap.set(curtain.current, { autoAlpha: 0 });
       gsap.set(curtain.current.children, { clearProps: 'transform' });
       gsap.set(edge.current, { autoAlpha: 0 });
-      setIdx(next);
-      busy.current = false;
+      tl.current = null;
     };
-    const tl = gsap.timeline({ onComplete: done });
+    const t = gsap.timeline({ onComplete: done });
+    tl.current = t;
 
     if (m.heroFx === 'slide') {
-      tl.set(fxLayer.current, { autoAlpha: 1, x: '100%', clipPath: 'none', rotateY: 0 })
-        .to(fxLayer.current, { x: '0%', duration: 0.85, ease: 'power3.inOut' })
-        .to(baseImg.current, { x: '-16%', scale: 1.04, duration: 0.85, ease: 'power3.inOut' }, 0);
+      t.set(fxLayer.current, { autoAlpha: 1, x: '100%', clipPath: 'none', rotateY: 0 })
+        .to(fxLayer.current, { x: '0%', duration: 0.5, ease: 'power3.inOut' })
+        .to(baseImg.current, { x: '-16%', scale: 1.04, duration: 0.5, ease: 'power3.inOut' }, 0);
     } else if (m.heroFx === 'wipe') {
       // a slanted brass edge crosses the frame and leaves the new picture behind
-      tl.set(fxLayer.current, {
+      t.set(fxLayer.current, {
         autoAlpha: 1, x: 0, rotateY: 0,
         clipPath: 'polygon(-30% 0%, -30% 0%, -60% 100%, -60% 100%)',
       })
         .set(edge.current, { autoAlpha: 1, xPercent: -60 })
         .to(fxLayer.current, {
           clipPath: 'polygon(-30% 0%, 130% 0%, 100% 100%, -60% 100%)',
-          duration: 1,
+          duration: 0.58,
           ease: 'power3.inOut',
         })
-        .to(edge.current, { xPercent: 108, duration: 1, ease: 'power3.inOut' }, 0)
-        .to(baseImg.current, { scale: 1.06, duration: 1, ease: 'power2.inOut' }, 0)
-        .to(edge.current, { autoAlpha: 0, duration: 0.25 }, 0.8);
+        .to(edge.current, { xPercent: 108, duration: 0.58, ease: 'power3.inOut' }, 0)
+        .to(baseImg.current, { scale: 1.06, duration: 0.58, ease: 'power2.inOut' }, 0)
+        .to(edge.current, { autoAlpha: 0, duration: 0.16 }, 0.46);
     } else {
       // curtain: the picture on show is the curtain — it splits down the
       // middle and both halves draw aside, uncovering the next one
       const [left, right] = curtain.current.children;
-      setImg(left.querySelector('img'), imgs[idx]);
-      setImg(right.querySelector('img'), imgs[idx]);
-      tl.set(fxLayer.current, { autoAlpha: 1, x: 0, rotateY: 0, clipPath: 'none' })
+      setImg(left.querySelector('img'), from);
+      setImg(right.querySelector('img'), from);
+      t.set(fxLayer.current, { autoAlpha: 1, x: 0, rotateY: 0, clipPath: 'none' })
         .set(curtain.current, { autoAlpha: 1 })
         .set(seam.current, { autoAlpha: 1, scaleY: 0 })
-        .to(seam.current, { scaleY: 1, duration: 0.3, ease: 'power2.out' })
-        .to(left, { xPercent: -100, duration: 1.05, ease: 'power3.inOut' }, 0.14)
-        .to(right, { xPercent: 100, duration: 1.05, ease: 'power3.inOut' }, 0.14)
-        .to(seam.current, { autoAlpha: 0, duration: 0.35 }, 0.5);
+        .to(seam.current, { scaleY: 1, duration: 0.16, ease: 'power2.out' })
+        .to(left, { xPercent: -100, duration: 0.6, ease: 'power3.inOut' }, 0.07)
+        .to(right, { xPercent: 100, duration: 0.6, ease: 'power3.inOut' }, 0.07)
+        .to(seam.current, { autoAlpha: 0, duration: 0.2 }, 0.28);
     }
   };
 
@@ -116,19 +132,20 @@ function HeroStage({ idx, setIdx }) {
     pre.src = next;
   }, [idx, imgs]);
 
-  // auto-advance
+  // auto-advance. idx is a dependency, so choosing a picture by hand also
+  // restarts the clock — the one you picked gets its full turn on screen.
   useEffect(() => {
     if (imgs.length < 2) return;
     const t = setInterval(() => {
       if (!document.hidden) go((idx + 1) % imgs.length);
     }, 5200);
     return () => clearInterval(t);
-  });
+  }, [idx, imgs]);
 
   return (
     <div className="hero-stage" ref={stage}>
       <div className="hs-layer hs-base">
-        <img ref={baseImg} src={imgs[0]} srcSet={srcset(imgs[0])} sizes={SIZES} alt={m.heroCaptions[0]} fetchPriority="high" />
+        <img ref={baseImg} src={imgs[0]} srcSet={srcset(imgs[0])} sizes={SIZES} alt={m.heroCaptions[idx] ?? m.heroCaptions[0]} fetchPriority="high" />
       </div>
       <div className="hs-layer hs-fx" ref={fxLayer} aria-hidden="true">
         <img ref={fxImg} alt="" />
@@ -144,12 +161,18 @@ function HeroStage({ idx, setIdx }) {
         {imgs.map((_, i) => (
           <button
             key={i}
+            type="button"
             role="tab"
             aria-selected={i === idx}
-            aria-label={`Image ${i + 1}`}
+            aria-label={m.heroCaptions[i] ?? `Image ${i + 1}`}
+            title={m.heroCaptions[i] ?? `Image ${i + 1}`}
             className={`hs-dot${i === idx ? ' active' : ''}`}
             onClick={() => go(i)}
-          />
+          >
+            {/* the rule is drawn by the span; the button around it is the
+                finger-sized target you actually press */}
+            <span aria-hidden="true" />
+          </button>
         ))}
       </div>
     </div>
