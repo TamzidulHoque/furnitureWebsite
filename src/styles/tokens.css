@@ -53,7 +53,7 @@
   --ground: #ece7dc;            /* light mode: “dark” sections are warm greige */
   --ground-deep: #e3ddcf;
   --ground-ink: #2b2b28;
-  --ground-ink-soft: #71705f;
+  --ground-ink-soft: #55534a;   /* 4.7:1 on the greige grounds, not 3.1:1 */
   --paper: #faf8f3;
   --paper-2: #f1eee6;
   --paper-ink: #262624;

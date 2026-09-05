@@ -1495,6 +1495,17 @@ section { position: relative; }
   .bsp-wash { display: none; }
 }
 
+/* In Modern the "dark" section is a warm greige a hair away from the paper
+   above it, so the whole area read as nothing at all — no edge, no step, and
+   a wash the same colour as both. It gets the deeper ground instead, which
+   gives the wash something to lift off and the section an edge again. */
+.bespoke { --bsp-ground: var(--ground); }
+:root[data-mode='modern'] .bespoke {
+  --bsp-ground: color-mix(in srgb, var(--ground-deep) 90%, var(--paper-ink));
+  background: var(--bsp-ground);
+  border-top: 1px solid var(--hairline-dark);
+}
+
 /* the room behind the words, travelling slower than the page */
 .bsp-bg {
   position: absolute;
@@ -1520,12 +1531,14 @@ section { position: relative; }
   inset: 0;
   background: linear-gradient(
     180deg,
-    var(--ground) 0%,
-    color-mix(in srgb, var(--ground) 78%, transparent) 30%,
-    color-mix(in srgb, var(--ground) 62%, transparent) 58%,
-    var(--ground) 100%);
+    var(--bsp-ground) 0%,
+    color-mix(in srgb, var(--bsp-ground) 78%, transparent) 30%,
+    color-mix(in srgb, var(--bsp-ground) 62%, transparent) 58%,
+    var(--bsp-ground) 100%);
 }
 :root[data-mode='noir'] .bsp-bg img { opacity: 0.5; }
+/* a pale photograph on a pale ground smears; Modern takes it as texture */
+:root[data-mode='modern'] .bsp-bg img { opacity: 0.16; filter: saturate(0.5) contrast(1.05); }
 @media (prefers-reduced-motion: reduce) {
   .bsp-bg img { top: 0; height: 100%; }
 }
